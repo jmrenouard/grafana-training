@@ -1,0 +1,2145 @@
+{
+  "general": [
+    {
+      "parametre": "app_mode",
+      "description": "Définit le mode de fonctionnement. Les options sont 'production' et 'development'.  Ne changez cette option que si vous travaillez sur le développement de Grafana. ",
+      "valeur_par_defaut": "production"
+    },
+    {
+      "parametre": "instance_name",
+      "description": "Définit le nom de l'instance du serveur Grafana. Utilisé dans la journalisation, les métriques internes et les informations de clustering. ",
+      "valeur_par_defaut": "${HOSTNAME}"
+    }
+  ],
+  "paths": [
+    {
+      "parametre": "data",
+      "description": "Chemin où Grafana stocke la base de données sqlite3 (si utilisée), les sessions basées sur les fichiers (si utilisées) et d'autres données.  Ce chemin est généralement spécifié via la ligne de commande dans le script init.d ou le fichier de service systemd. ",
+      "valeur_par_defaut": "Non spécifié (ex: /usr/local/var/lib/grafana sur macOS) "
+    },
+    {
+      "parametre": "temp_data_lifetime",
+      "description": "Durée de conservation des images temporaires dans le répertoire de données.  Modificateurs pris en charge : h (heures), m (minutes). Utilisez 0 pour ne jamais nettoyer les fichiers temporaires. ",
+      "valeur_par_defaut": "24h"
+    },
+    {
+      "parametre": "logs",
+      "description": "Chemin où Grafana stocke les journaux.  Ce chemin est généralement spécifié via la ligne de commande  mais peut être surchargé dans le fichier de configuration. ",
+      "valeur_par_defaut": "Non spécifié (ex: /usr/local/var/log/grafana/grafana.log sur macOS) "
+    },
+    {
+      "parametre": "plugins",
+      "description": "Répertoire où Grafana scanne et recherche automatiquement les plugins. ",
+      "valeur_par_defaut": "Non spécifié (ex: /usr/local/var/lib/grafana/plugins sur macOS)"
+    },
+    {
+      "parametre": "provisioning",
+      "description": "Répertoire contenant les fichiers de configuration de provisioning que Grafana applique au démarrage.  Les dashboards sont rechargés lorsque les fichiers JSON changent. ",
+      "valeur_par_defaut": "Non spécifié"
+    }
+  ],
+  "server": [
+    {
+      "parametre": "protocol",
+      "description": "Protocole à utiliser : http, https, h2 ou socket. ",
+      "valeur_par_defaut": "http"
+    },
+    {
+      "parametre": "min_tls_version",
+      "description": "La poignée de main TLS nécessite une version TLS minimale. Les options disponibles sont TLS1.2 et TLS1.3. ",
+      "valeur_par_defaut": "TLS1.2"
+    },
+    {
+      "parametre": "http_addr",
+      "description": "L'hôte sur lequel le serveur doit écouter.  Une valeur vide est équivalente à 0.0.0.0, signifiant que Grafana se lie à toutes les interfaces. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "http_port",
+      "description": "Le port sur lequel se lier. ",
+      "valeur_par_defaut": "3000"
+    },
+    {
+      "parametre": "domain",
+      "description": "Ce paramètre est uniquement utilisé comme partie du paramètre root_url.  Important si vous utilisez l'authentification OAuth GitHub ou Google. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "enforce_domain",
+      "description": "Redirige vers le domaine correct si l'en-tête 'host' ne correspond pas au domaine.  Empêche les attaques de DNS rebinding. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "root_url",
+      "description": "L'URL complète utilisée pour accéder à Grafana depuis un navigateur web.  Important pour l'authentification OAuth (pour que l'URL de rappel soit correcte).  Également important si vous avez un proxy inverse devant Grafana qui l'expose via un sous-chemin. [cite: 28, 29]",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "serve_from_sub_path",
+      "description": "Sert Grafana à partir du sous-chemin spécifié dans le paramètre root_url.  Si activé et root_url = http://localhost:3000/grafana, Grafana est accessible sur http://localhost:3000/grafana. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "router_logging",
+      "description": "Mettre à 'true' pour que Grafana journalise toutes les requêtes HTTP (pas seulement les erreurs).  Celles-ci sont journalisées en tant qu'événements de niveau Info. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "static_root_path",
+      "description": "Le chemin vers le répertoire où se trouvent les fichiers frontend (HTML, JS, et CSS). ",
+      "valeur_par_defaut": "public"
+    },
+    {
+      "parametre": "enable_gzip",
+      "description": "Mettre cette option à 'true' pour activer la compression HTTP.  Recommandé pour la plupart des utilisateurs. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "cert_file",
+      "description": "Chemin vers le fichier de certificat (si le protocole est https ou h2). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "cert_key",
+      "description": "Chemin vers le fichier de clé de certificat (si le protocole est https ou h2).",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "cert_pass",
+      "description": "Optionnel. Mot de passe pour déchiffrer les certificats chiffrés. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "certs_watch_interval",
+      "description": "Contrôle si cert_key et cert_file sont surveillés périodiquement pour les changements.  Si activé, les nouveaux certificats sont chargés automatiquement. ",
+      "valeur_par_defaut": "0 (désactivé)"
+    },
+    {
+      "parametre": "socket_gid",
+      "description": "GID à définir pour le socket lorsque protocol=socket.  Non défini lorsque la valeur est -1. ",
+      "valeur_par_defaut": "-1"
+    },
+    {
+      "parametre": "socket_mode",
+      "description": "Mode à définir pour le socket lorsque protocol=socket. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "socket",
+      "description": "Chemin où le socket doit être créé lorsque protocol=socket. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "cdn_url",
+      "description": "Spécifie une adresse URL HTTP complète vers la racine de vos actifs CDN Grafana. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "read_timeout",
+      "description": "Définit le temps maximum (format durée : 5s/5m/5ms) avant l'expiration de la lecture d'une requête entrante.  0 signifie qu'il n'y a pas de délai d'attente. ",
+      "valeur_par_defaut": "0"
+    },
+    {
+      "parametre": "server.custom_response_headers",
+      "description": "Permet de spécifier des en-têtes supplémentaires que le serveur ajoute aux réponses HTTP(S). (Ex: exampleHeader1 = exampleValue1). ",
+      "valeur_par_defaut": ""
+    }
+  ],
+  "database": [
+    {
+      "parametre": "type",
+      "description": "Type de base de données : 'mysql', 'postgres' ou 'sqlite3'. [cite: 54, 55]",
+      "valeur_par_defaut": "sqlite3"
+    },
+    {
+      "parametre": "host",
+      "description": "Applicable uniquement à MySQL ou Postgres.  Inclut l'IP ou le nom d'hôte et le port, ou le chemin vers le socket Unix. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "name",
+      "description": "Le nom de la base de données Grafana. ",
+      "valeur_par_defaut": "grafana"
+    },
+    {
+      "parametre": "user",
+      "description": "L'utilisateur de la base de données (non applicable pour sqlite3). ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "password",
+      "description": "Le mot de passe de l'utilisateur de la base de données (non applicable pour sqlite3). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "url",
+      "description": "Utilisez soit l'URL, soit les champs précédents pour configurer la base de données (Ex: type://user:password@host:port/name).",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "max_idle_conn",
+      "description": "Le nombre maximum de connexions dans le pool de connexions inactives. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "max_open_conn",
+      "description": "Le nombre maximum de connexions ouvertes à la base de données. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "conn_max_lifetime",
+      "description": "Définit la durée maximale pendant laquelle une connexion peut être réutilisée.  Pour MySQL, doit être plus court que wait_timeout. ",
+      "valeur_par_defaut": "14400"
+    },
+    {
+      "parametre": "migration_locking",
+      "description": "Mettre à 'false' pour désactiver le verrouillage de la base de données pendant les migrations. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "locking_attempt_timeout_sec",
+      "description": "Pour mysql et postgres uniquement.  Temps, en secondes, à attendre avant d'échouer à verrouiller la base de données pour les migrations. ",
+      "valeur_par_defaut": "0"
+    },
+    {
+      "parametre": "log_queries",
+      "description": "Mettre à 'true' pour journaliser les appels SQL et leurs temps d'exécution. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "ssl_mode",
+      "description": "Pour Postgres, tout 'sslmode' libpq valide (ex: disable, require, verify-full).  Pour MySQL, 'true', 'false', ou 'skip-verify'. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "ssl_sni",
+      "description": "Pour Postgres, mettre à 0 pour désactiver l'indication du nom du serveur (SNI). ",
+      "valeur_par_defaut": "1 (activé)"
+    },
+    {
+      "parametre": "isolation_level",
+      "description": "Uniquement pour MySQL. Options : 'READ-UNCOMMITTED', 'READ-COMMITTED', 'REPEATABLE-READ' ou 'SERIALIZABLE'.  Si vide, le niveau par défaut du pilote est appliqué. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ca_cert_path",
+      "description": "Le chemin vers le certificat CA à utiliser. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "client_key_path",
+      "description": "Le chemin vers la clé client.  Seulement si le serveur nécessite une authentification client. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "client_cert_path",
+      "description": "Le chemin vers le certificat client. Seulement si le serveur nécessite une authentification client. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "server_cert_name",
+      "description": "Le champ 'common name' du certificat utilisé par le serveur mysql ou postgres. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "path",
+      "description": "Applicable uniquement pour la base de données sqlite3. Le chemin vers le fichier de la base de données. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "cache_mode",
+      "description": "Pour 'sqlite3' uniquement. Paramètre de cache partagé (private, shared). ",
+      "valeur_par_defaut": "private"
+    },
+    {
+      "parametre": "wal",
+      "description": "Pour 'sqlite3' uniquement.  Paramètre pour activer/désactiver le 'Write-Ahead Logging'. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "query_retries",
+      "description": "S'applique à sqlite uniquement. Nombre de tentatives de nouvelle exécution d'une requête lorsque la base de données est verrouillée. ",
+      "valeur_par_defaut": "0"
+    },
+    {
+      "parametre": "transaction_retries",
+      "description": "S'applique à sqlite uniquement. Nombre de tentatives de nouvelle exécution d'une transaction lorsque la base de données est verrouillée. ",
+      "valeur_par_defaut": "5"
+    },
+    {
+      "parametre": "instrument_queries",
+      "description": "Mettre à 'true' pour ajouter des métriques et du traçage pour les requêtes de base de données. ",
+      "valeur_par_defaut": "false"
+    }
+  ],
+  "remote_cache": [
+    {
+      "parametre": "type",
+      "description": "Met en cache les jetons d'authentification et autres données temporaires.  Options : 'redis', 'memcached', ou 'database'.  Ne contrôle pas le stockage de session utilisateur. [cite: 83, 84]",
+      "valeur_par_defaut": "database"
+    },
+    {
+      "parametre": "connstr",
+      "description": "La chaîne de connexion du cache distant.  Le format dépend du type.  Laissez vide si type=database pour utiliser la base de données principale. ",
+      "valeur_par_defaut": ""
+    }
+  ],
+  "dataproxy": [
+    {
+      "parametre": "logging",
+      "description": "Active la journalisation du proxy de données. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "timeout",
+      "description": "Combien de temps le proxy de données doit attendre avant d'expirer.  S'applique également aux sources de données HTTP principales du backend. ",
+      "valeur_par_defaut": "30s"
+    },
+    {
+      "parametre": "keep_alive_seconds",
+      "description": "Intervalle entre les sondes keep-alive. ",
+      "valeur_par_defaut": "30s"
+    },
+    {
+      "parametre": "tls_handshake_timeout_seconds",
+      "description": "Temps d'attente de Grafana pour une poignée de main TLS réussie avec la source de données. ",
+      "valeur_par_defaut": "10s"
+    },
+    {
+      "parametre": "expect_continue_timeout_seconds",
+      "description": "Temps d'attente de Grafana pour les premiers en-têtes de réponse d'une source de données si la requête a un en-tête 'Expect: 100-continue'.  Une valeur de 0 envoie le corps immédiatement. ",
+      "valeur_par_defaut": "1s"
+    },
+    {
+      "parametre": "max_conns_per_host",
+      "description": "Limite le nombre total de connexions par hôte.  Une valeur de 0 signifie aucune limite. ",
+      "valeur_par_defaut": "0"
+    },
+    {
+      "parametre": "max_idle_connections",
+      "description": "Le nombre maximum de connexions inactives que Grafana maintient. ",
+      "valeur_par_defaut": "100"
+    },
+    {
+      "parametre": "idle_conn_timeout_seconds",
+      "description": "Temps pendant lequel Grafana maintient les connexions inactives avant de les fermer. ",
+      "valeur_par_defaut": "90s"
+    },
+    {
+      "parametre": "send_user_header",
+      "description": "Si activé et que l'utilisateur n'est pas anonyme, le proxy de données ajoute l'en-tête X-Grafana-User avec le nom d'utilisateur dans la requête. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "response_limit",
+      "description": "Limite la quantité de données (en octets) que Grafana lit des réponses des requêtes HTTP sortantes. ",
+      "valeur_par_defaut": "0 (désactivé)"
+    },
+    {
+      "parametre": "row_limit",
+      "description": "Limite le nombre de lignes que Grafana traite à partir des sources de données SQL. ",
+      "valeur_par_defaut": "1000000"
+    },
+    {
+      "parametre": "user_agent",
+      "description": "Définit une valeur personnalisée pour l'en-tête User-Agent pour les requêtes sortantes du proxy de données. ",
+      "valeur_par_defaut": "Grafana/<BuildVersion>"
+    }
+  ],
+  "analytics": [
+    {
+      "parametre": "enabled",
+      "description": "Aussi connu sous le nom d'analyse d'utilisation.  Si 'false', désactive les fonctionnalités associées comme les aperçus de dashboard/source de données, les indicateurs de présence, etc. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "reporting_enabled",
+      "description": "Si activé, Grafana envoie des statistiques d'utilisation anonymes à stats.grafana.org.  Les compteurs sont envoyés toutes les 24 heures. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "check_for_updates",
+      "description": "Mettre à 'false' pour désactiver la vérification de nouvelles versions de Grafana sur GitHub.  La vérification s'exécute toutes les dix minutes si activée. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "check_for_plugin_updates",
+      "description": "Mettre à 'false' pour désactiver la vérification de nouvelles versions des plugins installés depuis https://grafana.com.  La vérification s'exécute toutes les dix minutes si activée. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "google_analytics_ua_id",
+      "description": "Spécifiez votre ID Universal Analytics ici pour suivre l'utilisation de Grafana avec Google Analytics. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "google_analytics_4_id",
+      "description": "Spécifiez votre ID GA4 ici pour suivre l'utilisation de Grafana avec Google Analytics 4. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "google_tag_manager_id",
+      "description": "ID Google Tag Manager, activé seulement si vous entrez un ID ici. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rudderstack_write_key",
+      "description": "Clé d'écriture RudderStack pour suivre l'utilisation via RudderStack.  rudderstack_data_plane_url doit également être fourni. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rudderstack_data_plane_url",
+      "description": "URL du plan de données RudderStack pour recevoir les événements. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rudderstack_sdk_url",
+      "description": "Optionnel.  URL personnalisée pour charger le SDK RudderStack. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rudderstack_config_url",
+      "description": "Optionnel.  URL personnalisée pour charger la configuration RudderStack. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rudderstack_integrations_url",
+      "description": "Optionnel.  URL personnalisée pour charger le SDK pour les destinations s'exécutant en mode appareil. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "application_insights_connection_string",
+      "description": "Chaîne de connexion Application Insights pour suivre l'utilisation via Azure Application Insights.  Doit être entourée d'apostrophes inverses (`). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "application_insights_endpoint_url",
+      "description": "Optionnel.  Surcharge l'adresse de point de terminaison par défaut pour la collecte de données Application Insights. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "feedback_links_enabled",
+      "description": "Mettre à 'false' pour supprimer tous les liens de feedback de l'interface utilisateur. ",
+      "valeur_par_defaut": "true"
+    }
+  ],
+  "security": [
+    {
+      "parametre": "disable_initial_admin_creation",
+      "description": "Désactive la création d'un utilisateur Admin Grafana au premier démarrage de Grafana. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "admin_user",
+      "description": "Le nom de l'utilisateur Admin Grafana par défaut. ",
+      "valeur_par_defaut": "admin"
+    },
+    {
+      "parametre": "admin_password",
+      "description": "Le mot de passe de l'Admin Grafana par défaut.  Défini une seule fois au premier lancement. ",
+      "valeur_par_defaut": "admin"
+    },
+    {
+      "parametre": "admin_email",
+      "description": "L'email de l'Admin Grafana par défaut, créé au démarrage. ",
+      "valeur_par_defaut": "admin@localhost"
+    },
+    {
+      "parametre": "secret_key",
+      "description": "Utilisée pour signer certains paramètres de source de données comme les secrets et les mots de passe (AES-256 en mode CFB).  Ne peut pas être changée sans nécessiter une mise à jour des paramètres de source de données. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "disable_gravatar",
+      "description": "Mettre à 'true' pour désactiver l'utilisation de Gravatar pour les images de profil utilisateur. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "data_source_proxy_whitelist",
+      "description": "Définit une liste autorisée d'adresses IP ou de domaines avec ports, pouvant être utilisés dans les URL de source de données avec le proxy de source de données Grafana.  Format : <IP> ou <DOMAINE>:<PORT> séparés par des espaces. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "disable_brute_force_login_protection",
+      "description": "Mettre à 'true' pour désactiver la protection contre les attaques par force brute lors de la connexion. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "brute_force_login_protection_max_attempts",
+      "description": "Configure combien de tentatives de connexion un utilisateur peut avoir dans une fenêtre de cinq minutes avant que son compte ne soit verrouillé. ",
+      "valeur_par_defaut": "5"
+    },
+    {
+      "parametre": "disable_ip_address_login_protection",
+      "description": "Mettre à 'true' pour désactiver la protection contre les attaques par force brute par adresse IP. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "cookie_secure",
+      "description": "Mettre à 'true' si vous hébergez Grafana derrière HTTPS. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "cookie_samesite",
+      "description": "Définit l'attribut de cookie SameSite.  Valeurs valides : 'lax', 'strict', 'none', et 'disabled'. ",
+      "valeur_par_defaut": "lax"
+    },
+    {
+      "parametre": "allow_embedding",
+      "description": "Si 'false', l'en-tête HTTP X-Frame-Options: deny est défini, empêchant le rendu de Grafana dans une frame/iframe.  Atténue le risque de Clickjacking. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "strict_transport_security",
+      "description": "Mettre à 'true' pour activer l'en-tête de réponse HTTP Strict-Transport-Security (HSTS).  À n'utiliser que si HTTPS est activé. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "strict_transport_security_max_age_seconds",
+      "description": "Définit combien de temps un navigateur doit mettre HSTS en cache, en secondes.  Appliqué uniquement si strict_transport_security est activé. ",
+      "valeur_par_defaut": "86400"
+    },
+    {
+      "parametre": "strict_transport_security_preload",
+      "description": "Mettre à 'true' pour activer l'option de préchargement HSTS.  Appliqué uniquement si strict_transport_security est activé. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "strict_transport_security_subdomains",
+      "description": "Mettre à 'true' pour activer l'option HSTS includeSubDomains.  Appliqué uniquement si strict_transport_security est activé. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "x_content_type_options",
+      "description": "Mettre à 'false' pour désactiver l'en-tête de réponse X-Content-Type-Options. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "x_xss_protection",
+      "description": "Mettre à 'false' pour désactiver l'en-tête X-XSS-Protection. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "content_security_policy",
+      "description": "Mettre à 'true' pour ajouter l'en-tête Content-Security-Policy à vos requêtes. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "content_security_policy_template",
+      "description": "Définit le modèle de politique utilisé pour ajouter l'en-tête Content-Security-Policy.  $NONCE dans le modèle inclut un nonce aléatoire. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "content_security_policy_report_only",
+      "description": "Mettre à 'true' pour ajouter l'en-tête Content-Security-Policy-Report-Only.  Permet de tester les politiques sans les appliquer. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "actions_allow_post_url",
+      "description": "Définit les chemins API accessibles entre les plugins utilisant le verbe POST.  Liste séparée par des virgules utilisant la correspondance glob. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "angular_support_enabled",
+      "description": "Si 'false', le framework Angular et les composants de support ne sont pas chargés.  Les plugins et fonctionnalités (comme les anciens panneaux graph/table) dépendant d'Angular ne fonctionneront pas. [cite: 180, 181]",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "csrf_trusted_origins",
+      "description": "Liste d'URL supplémentaires autorisées à passer la vérification CSRF. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "csrf_additional_headers",
+      "description": "Liste d'en-têtes autorisés à être définis par l'utilisateur. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "csrf_always_check",
+      "description": "Mettre à 'true' pour exécuter la vérification CSRF même si le cookie de connexion n'est pas dans la requête. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "enable_frontend_sandbox_for_plugins",
+      "description": "Liste d'ID de plugins (séparés par des virgules) à charger dans le bac à sable (sandbox) frontend. ",
+      "valeur_par_defaut": ""
+    }
+  ],
+  "snapshots": [
+    {
+      "parametre": "enabled",
+      "description": "Mettre à 'false' pour désactiver la fonctionnalité de snapshot. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "external_enabled",
+      "description": "Mettre à 'false' pour désactiver le point de terminaison de publication de snapshot externe. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "external_snapshot_url",
+      "description": "Définir l'URL racine d'une instance Grafana où vous souhaitez publier des snapshots externes. ",
+      "valeur_par_defaut": "https://snapshots.raintank.io"
+    },
+    {
+      "parametre": "external_snapshot_name",
+      "description": "Définir le nom du bouton de snapshot externe. ",
+      "valeur_par_defaut": "Publish to snapshots.raintank.io"
+    },
+    {
+      "parametre": "public_mode",
+      "description": "Mettre à 'true' pour permettre à cette instance Grafana d'agir comme un serveur de snapshots externe et autoriser les requêtes non authentifiées pour créer et supprimer des snapshots. ",
+      "valeur_par_defaut": "false"
+    }
+  ],
+  "dashboards": [
+    {
+      "parametre": "versions_to_keep",
+      "description": "Nombre de versions de dashboard à conserver (par dashboard).  Minimum : 1. ",
+      "valeur_par_defaut": "20"
+    },
+    {
+      "parametre": "min_refresh_interval",
+      "description": "Empêche les utilisateurs de définir l'intervalle de rafraîchissement du dashboard à une valeur inférieure à celle donnée.  Limite également les options d'intervalle dans Explore. ",
+      "valeur_par_defaut": "5s"
+    },
+    {
+      "parametre": "default_home_dashboard_path",
+      "description": "Chemin vers le dashboard d'accueil par défaut.  Si vide, Grafana utilise StaticRootPath + 'dashboards/home.json'. ",
+      "valeur_par_defaut": "Non spécifié (ex: /usr/share/grafana/public/dashboards/home.json sur Linux) "
+    },
+    {
+      "parametre": "dashboard_cleanup.interval",
+      "description": "Fréquence d'exécution du travail de nettoyage des informations de dashboards associés (si supprimés via /apis). [cite: 197, 198] Valeur minimale autorisée : 10s. ",
+      "valeur_par_defaut": "30s"
+    },
+    {
+      "parametre": "dashboard_cleanup.batch_size",
+      "description": "Nombre de dashboards supprimés à traiter dans chaque lot pendant le processus de nettoyage.  Minimum : 5, Maximum : 200. ",
+      "valeur_par_defaut": "10"
+    },
+    {
+      "parametre": "public_dashboards.enabled",
+      "description": "Mettre à 'false' pour désactiver la fonctionnalité de dashboards partagés.  Empêche la création de nouveaux dashboards partagés et désactive les existants. ",
+      "valeur_par_defaut": "true"
+    }
+  ],
+  "datasources": [
+    {
+      "parametre": "default_manage_alerts_ui_toggle",
+      "description": "Comportement par défaut du bouton 'Gérer les alertes via l'interface utilisateur d'alertes' lors de la configuration d'une source de données. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "default_allow_recording_rules_target_alerts_ui_toggle",
+      "description": "Comportement par défaut du bouton 'Autoriser en tant que cible de règles d'enregistrement' lors de la configuration d'une source de données. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "sql_datasources.max_open_conns_default",
+      "description": "Pour les sources de données SQL (MySql, Postgres, MSSQL), surcharge le nombre maximum par défaut de connexions ouvertes.  La valeur configurée dans les paramètres de la source de données est préférée. ",
+      "valeur_par_defaut": "100"
+    },
+    {
+      "parametre": "sql_datasources.max_idle_conns_default",
+      "description": "Pour les sources de données SQL, surcharge le nombre maximum par défaut de connexions inactives.  La valeur configurée dans les paramètres de la source de données est préférée. ",
+      "valeur_par_defaut": "100"
+    },
+    {
+      "parametre": "sql_datasources.max_conn_lifetime_default",
+      "description": "Pour les sources de données SQL, surcharge la durée de vie maximale par défaut de la connexion, spécifiée en secondes.  La valeur configurée dans les paramètres de la source de données est préférée. ",
+      "valeur_par_defaut": "14400"
+    }
+  ],
+  "users": [
+    {
+      "parametre": "allow_sign_up",
+      "description": "Mettre à 'false' pour interdire aux utilisateurs de s'inscrire ou de créer des comptes d'utilisateurs.  Un admin Grafana peut toujours créer des utilisateurs. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "allow_org_create",
+      "description": "Mettre à 'false' pour interdire aux utilisateurs de créer de nouvelles organisations. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "auto_assign_org",
+      "description": "Mettre à 'true' pour ajouter automatiquement les nouveaux utilisateurs à l'organisation principale (ID 1).  Si 'false', une nouvelle organisation est créée pour le nouvel utilisateur. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "auto_assign_org_id",
+      "description": "Définit cette valeur pour ajouter automatiquement les nouveaux utilisateurs à l'organisation fournie.  'auto_assign_org' doit être 'true'. ",
+      "valeur_par_defaut": "1"
+    },
+    {
+      "parametre": "auto_assign_org_role",
+      "description": "Détermine le rôle par défaut attribué aux nouveaux utilisateurs dans l'organisation principale.  Options : 'Viewer', 'Admin', 'Editor', 'None'. ",
+      "valeur_par_defaut": "Viewer"
+    },
+    {
+      "parametre": "verify_email_enabled",
+      "description": "Exiger la validation de l'email avant la fin de l'inscription ou lors de la mise à jour de l'email d'un utilisateur. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "login_default_org_id",
+      "description": "Définir l'organisation par défaut pour les utilisateurs lorsqu'ils se connectent. ",
+      "valeur_par_defaut": "-1"
+    },
+    {
+      "parametre": "login_hint",
+      "description": "Texte utilisé comme texte de remplacement sur la page de connexion pour le champ de connexion/nom d'utilisateur. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "password_hint",
+      "description": "Texte utilisé comme texte de remplacement sur la page de connexion pour le champ de mot de passe.",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "default_theme",
+      "description": "Définit le thème d'interface utilisateur par défaut : 'dark', 'light', ou 'system'.  'system' correspond au thème système de l'utilisateur. ",
+      "valeur_par_defaut": "dark"
+    },
+    {
+      "parametre": "default_language",
+      "description": "Définit la langue d'interface utilisateur par défaut (tag de langue IETF comme en-US).  Si 'detect', la langue est déterminée par la préférence du navigateur. ",
+      "valeur_par_defaut": "en-US"
+    },
+    {
+      "parametre": "home_page",
+      "description": "Chemin vers une page d'accueil personnalisée.  Doit correspondre à une route frontend et contenir un slash au début. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "viewers_can_edit",
+      "description": "(Obsolète)  Les 'Viewers' peuvent accéder et utiliser Explore et effectuer des modifications temporaires sur les panneaux.  Ils ne peuvent pas sauvegarder leurs changements. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "editors_can_admin",
+      "description": "(Obsolète)  Les 'Editors' peuvent administrer les dashboards, dossiers et équipes qu'ils créent. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "user_invite_max_lifetime_duration",
+      "description": "Durée de validité d'une invitation d'utilisateur avant son expiration.  Doit être exprimée en durée (ex: 6h, 2d, 1w).  Durée minimale : 15m. ",
+      "valeur_par_defaut": "24h"
+    },
+    {
+      "parametre": "verification_email_max_lifetime_duration",
+      "description": "Durée de validité d'un email de vérification (pour la mise à jour de l'adresse email) avant son expiration.  Doit être exprimée en durée. ",
+      "valeur_par_defaut": "1h"
+    },
+    {
+      "parametre": "last_seen_update_interval",
+      "description": "Fréquence de mise à jour de la dernière vue d'un utilisateur.  Durée minimale : 5m, maximale : 1h. ",
+      "valeur_par_defaut": "15m"
+    },
+    {
+      "parametre": "hidden_users",
+      "description": "Liste de noms d'utilisateurs séparés par des virgules.  Les utilisateurs spécifiés ici sont cachés dans l'interface utilisateur de Grafana (sauf pour les administrateurs et eux-mêmes). ",
+      "valeur_par_defaut": ""
+    }
+  ],
+  "authentification": [
+    {
+      "parametre": "login_cookie_name",
+      "description": "Le nom du cookie pour stocker le jeton d'authentification. ",
+      "valeur_par_defaut": "grafana_session"
+    },
+    {
+      "parametre": "login_maximum_inactive_lifetime_duration",
+      "description": "Durée maximale (durée) pendant laquelle un utilisateur authentifié peut être inactif avant de devoir se reconnecter.  Exprimée en durée (5m, 6h, 10d). ",
+      "valeur_par_defaut": "7d"
+    },
+    {
+      "parametre": "login_maximum_lifetime_duration",
+      "description": "Durée maximale (durée) pendant laquelle un utilisateur authentifié peut rester connecté depuis l'heure de connexion.  Exprimée en durée. ",
+      "valeur_par_defaut": "30d"
+    },
+    {
+      "parametre": "token_rotation_interval_minutes",
+      "description": "Fréquence de rotation des jetons d'authentification pour les utilisateurs authentifiés lorsque l'utilisateur est actif. ",
+      "valeur_par_defaut": "10"
+    },
+    {
+      "parametre": "disable_login_form",
+      "description": "Mettre à 'true' pour désactiver (cacher) le formulaire de connexion, utile si vous utilisez OAuth. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "disable_signout_menu",
+      "description": "Mettre à 'true' pour désactiver le lien de déconnexion dans le menu latéral.  Utile si vous utilisez auth.proxy. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "signout_redirect_url",
+      "description": "L'URL vers laquelle l'utilisateur est redirigé lors de la déconnexion.  Peut être utilisé pour OpenID Connect RP-Initiated Logout. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "oauth_auto_login",
+      "description": "(Obsolète)  Mettre à 'true' pour tenter la connexion avec OAuth automatiquement.  Ignoré si plusieurs fournisseurs OAuth sont configurés. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "oauth_state_cookie_max_age",
+      "description": "Durée de vie (en secondes) du cookie d'état OAuth avant d'être supprimé. ",
+      "valeur_par_defaut": "600"
+    },
+    {
+      "parametre": "oauth_login_error_message",
+      "description": "Un message d'erreur personnalisé lorsque les utilisateurs ne sont pas autorisés via OAuth. ",
+      "valeur_par_defaut": "Login provider denied login request"
+    },
+    {
+      "parametre": "oauth_refresh_token_server_lock_min_wait_ms",
+      "description": "Temps d'attente minimum en millisecondes pour le mécanisme de nouvelle tentative de verrouillage du serveur (utilisé pour le rafraîchissement des jetons OAuth). [cite: 261, 263]",
+      "valeur_par_defaut": "1000"
+    },
+    {
+      "parametre": "skip_org_role_sync",
+      "description": "Empêche la synchronisation des rôles d'organisation pour une intégration OAuth spécifique.  Si 'true', le rôle est défini lors de la première connexion et peut être géré dans Grafana. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "api_key_max_seconds_to_live",
+      "description": "Limite en secondes de la durée de vie des clés API avant expiration. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "sigv4_auth_enabled",
+      "description": "Mettre à 'true' pour activer l'option d'authentification AWS Signature Version 4 pour les sources de données basées sur HTTP. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "sigv4_verbose_logging",
+      "description": "Mettre à 'true' pour activer la journalisation verbeuse de la signature de requête lorsque l'authentification AWS Signature Version 4 est activée. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "managed_service_accounts_enabled",
+      "description": "(Grafana 11.3+)  Mettre à 'true' pour activer l'utilisation des comptes de service gérés pour l'authentification des plugins.  Ne supporte que les déploiements mono-organisation. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "auth.anonymous",
+      "description": "Section pour la configuration de l'authentification anonyme. Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.github",
+      "description": "Section pour la configuration de l'authentification GitHub OAuth2.  Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.gitlab",
+      "description": "Section pour la configuration de l'authentification GitLab OAuth 2.0. Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.google",
+      "description": "Section pour la configuration de l'authentification Google OAuth2.  Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.azuread",
+      "description": "Section pour la configuration de l'authentification Azure AD OAuth2. Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.okta",
+      "description": "Section pour la configuration de l'authentification Okta OAuth2.  Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.generic_oauth",
+      "description": "Section pour la configuration de l'authentification OAuth générique. Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.basic",
+      "description": "Section pour la configuration de l'authentification de base.  Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.proxy",
+      "description": "Section pour la configuration de l'authentification par proxy. Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.ldap",
+      "description": "Section pour la configuration de l'authentification LDAP.  Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "auth.jwt",
+      "description": "Section pour la configuration de l'authentification JWT. Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    }
+  ],
+  "cloud_integrations_aws": [
+    {
+      "parametre": "allowed_auth_providers",
+      "description": "Spécifie les fournisseurs d'authentification autorisés par les plugins AWS.  Options : 'default', 'keys', 'credentials', 'ec2_iam_role'. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "assume_role_enabled",
+      "description": "Mettre à 'false' pour désactiver l'authentification AWS utilisant un rôle assumé. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "list_metrics_page_limit",
+      "description": "Limite de page pour l'API List Metrics (utilisée pour les espaces de noms personnalisés dans la source de données Amazon CloudWatch). ",
+      "valeur_par_defaut": "500"
+    }
+  ],
+  "cloud_integrations_azure": [
+    {
+      "parametre": "cloud",
+      "description": "Environnement cloud Azure où Grafana est hébergé.  Options : 'AzureCloud', 'AzureChinaCloud', 'AzureUSGovernment', 'AzureGermanCloud'. ",
+      "valeur_par_defaut": "AzureCloud"
+    },
+    {
+      "parametre": "clouds_config",
+      "description": "Configuration JSON définissant une liste de clouds Azure personnalisés. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "managed_identity_enabled",
+      "description": "Spécifie si Grafana s'exécute dans Azure avec l'identité managée configurée. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "managed_identity_client_id",
+      "description": "L'ID client à utiliser pour l'identité managée assignée par l'utilisateur.  Doit être vide pour l'identité assignée par le système. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "workload_identity_enabled",
+      "description": "Spécifie si l'authentification Azure AD Workload Identity doit être activée. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "workload_identity_tenant_id",
+      "description": "ID de locataire (Tenant ID) de l'Azure AD Workload Identity. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "workload_identity_client_id",
+      "description": "ID client de l'Azure AD Workload Identity. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "workload_identity_token_file",
+      "description": "Chemin personnalisé vers le fichier de jeton pour l'Azure AD Workload Identity. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "user_identity_enabled",
+      "description": "Spécifie si l'authentification par identité utilisateur (au nom de l'utilisateur connecté) doit être activée. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "user_identity_fallback_credentials_enabled",
+      "description": "Spécifie si les informations d'identification de repli pour l'authentification par identité utilisateur doivent être activées. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "user_identity_token_url",
+      "description": "Surcharge l'URL du jeton pour Azure Active Directory. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "user_identity_client_authentication",
+      "description": "Surcharge la méthode d'authentification client pour Azure Active Directory. Valeurs : 'client_secret_post', 'managed_identity'. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "user_identity_client_id",
+      "description": "Surcharge l'ID d'application AAD. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "user_identity_client_secret",
+      "description": "Surcharge le secret client de l'application AAD. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "user_identity_managed_identity_client_id",
+      "description": "Surcharge l'ID client de l'identité managée AAD. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "user_identity_federated_credential_audience",
+      "description": "Surcharge l'audience des informations d'identification fédérées AAD. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "forward_settings_to_plugins",
+      "description": "Définit les plugins pour recevoir les paramètres Azure via le contexte du plugin. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "azure_entra_password_credentials_enabled",
+      "description": "Spécifie si l'authentification par mot de passe Entra peut être utilisée pour la source de données MSSQL.  Non recommandé. ",
+      "valeur_par_defaut": "false"
+    }
+  ],
+  "smtp_email": [
+    {
+      "parametre": "enabled",
+      "description": "Activer pour permettre à Grafana d'envoyer des emails. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "host",
+      "description": "Hôte et port du serveur SMTP.  Utilisez le port 465 pour TLS implicite. ",
+      "valeur_par_defaut": "localhost:25"
+    },
+    {
+      "parametre": "user",
+      "description": "En cas d'authentification SMTP. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "password",
+      "description": "En cas d'authentification SMTP. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "cert_file",
+      "description": "Chemin du fichier vers un fichier de certificat. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "key_file",
+      "description": "Chemin du fichier vers un fichier de clé. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "skip_verify",
+      "description": "Vérifier le SSL pour le serveur SMTP. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "from_address",
+      "description": "Adresse utilisée lors de l'envoi d'emails. ",
+      "valeur_par_defaut": "admin@grafana.localhost"
+    },
+    {
+      "parametre": "from_name",
+      "description": "Nom à utiliser lors de l'envoi d'emails. ",
+      "valeur_par_defaut": "Grafana"
+    },
+    {
+      "parametre": "ehlo_identity",
+      "description": "Nom à utiliser comme identité client pour EHLO dans la conversation SMTP. ",
+      "valeur_par_defaut": "<instance_name>"
+    },
+    {
+      "parametre": "startTLS_policy",
+      "description": "Options : 'OpportunisticStartTLS', 'MandatoryStartTLS', 'NoStartTLS', ou vide. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "enable_tracing",
+      "description": "Active la propagation du traçage dans les en-têtes d'email.  Nécessite la configuration du traçage dans l'une des sections tracing.opentelemetry.*. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "smtp.static_headers",
+      "description": "Paires clé-valeur (une par ligne) à inclure comme en-têtes sur les emails sortants. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "emails.welcome_email_on_sign_up",
+      "description": "Envoie un email de bienvenue lors de l'inscription. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "emails.templates_pattern",
+      "description": "Liste de motifs de templates séparés par des virgules. ",
+      "valeur_par_defaut": "emails/*.html, emails/*.txt"
+    },
+    {
+      "parametre": "emails.content_types",
+      "description": "Liste de types de contenu (séparés par des virgules) à inclure dans les emails, par ordre de préférence. [cite: 373, 374] Types supportés : text/html, text/plain. ",
+      "valeur_par_defaut": "text/html"
+    }
+  ],
+  "logging": [
+    {
+      "parametre": "mode",
+      "description": "Options : 'console', 'file', 'syslog'.  Utilisez des espaces pour séparer plusieurs modes. ",
+      "valeur_par_defaut": "console file"
+    },
+    {
+      "parametre": "level",
+      "description": "Options : 'debug', 'info', 'warn', 'error'. 'critical' est un alias pour 'error'. ",
+      "valeur_par_defaut": "info"
+    },
+    {
+      "parametre": "filters",
+      "description": "Paramètres optionnels pour définir différents niveaux pour des loggers spécifiques (ex: filters = sqlstore:debug,plugins:info). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "user_facing_default_error",
+      "description": "Message d'erreur par défaut affiché aux utilisateurs  au lieu d'erreurs backend sensibles. ",
+      "valeur_par_defaut": "Please inspect the Grafana server log for details."
+    },
+    {
+      "parametre": "console.level",
+      "description": "Applicable si 'console' est dans log.mode.  Niveau de journalisation. ",
+      "valeur_par_defaut": "Hérité de [log] level"
+    },
+    {
+      "parametre": "console.format",
+      "description": "Applicable si 'console' est dans log.mode.  Format de la ligne de log : 'text', 'console', 'json'. ",
+      "valeur_par_defaut": "console"
+    },
+    {
+      "parametre": "file.level",
+      "description": "Applicable si 'file' est dans log.mode. Niveau de journalisation. ",
+      "valeur_par_defaut": "Hérité de [log] level"
+    },
+    {
+      "parametre": "file.format",
+      "description": "Applicable si 'file' est dans log.mode. Format de la ligne de log : 'text', 'console', 'json'. ",
+      "valeur_par_defaut": "text"
+    },
+    {
+      "parametre": "file.log_rotate",
+      "description": "Activer la rotation automatisée des journaux ('true' ou 'false'). ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "file.max_lines",
+      "description": "Lignes maximales par fichier avant rotation. ",
+      "valeur_par_defaut": "1000000"
+    },
+    {
+      "parametre": "file.max_size_shift",
+      "description": "Taille maximale du fichier avant rotation (ex: 28 signifie 1 << 28, soit 256MB). ",
+      "valeur_par_defaut": "28"
+    },
+    {
+      "parametre": "file.daily_rotate",
+      "description": "Activer la rotation quotidienne des fichiers ('true' ou 'false'). ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "file.max_days",
+      "description": "Nombre maximum de jours de conservation des fichiers journaux. ",
+      "valeur_par_defaut": "7"
+    },
+    {
+      "parametre": "syslog.level",
+      "description": "Applicable si 'syslog' est dans log.mode. Niveau de journalisation. ",
+      "valeur_par_defaut": "Hérité de [log] level"
+    },
+    {
+      "parametre": "syslog.format",
+      "description": "Applicable si 'syslog' est dans log.mode. Format de la ligne de log : 'text', 'console', 'json'. ",
+      "valeur_par_defaut": "text"
+    },
+    {
+      "parametre": "syslog.network_and_address",
+      "description": "Type de réseau et adresse Syslog (UDP, TCP, ou UNIX). ",
+      "valeur_par_defaut": "Points de terminaison UNIX par défaut"
+    },
+    {
+      "parametre": "syslog.facility",
+      "description": "Facilité Syslog ('user', 'daemon', 'local0' à 'local7'). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "syslog.tag",
+      "description": "Tag Syslog. ",
+      "valeur_par_defaut": "argv[0] du processus"
+    },
+    {
+      "parametre": "frontend.enabled",
+      "description": "L'agent JavaScript Faro est initialisé. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "frontend.custom_endpoint",
+      "description": "Point de terminaison HTTP personnalisé pour envoyer les événements capturés par l'agent Faro. ",
+      "valeur_par_defaut": "/log-grafana-javascript-agent"
+    },
+    {
+      "parametre": "frontend.log_endpoint_requests_per_second_limit",
+      "description": "Limite de requêtes par seconde appliquée pour le point de terminaison d'ingestion de logs backend de Grafana. ",
+      "valeur_par_defaut": "3"
+    },
+    {
+      "parametre": "frontend.log_endpoint_burst_limit",
+      "description": "Requêtes maximales acceptées par court intervalle de temps pour le point de terminaison d'ingestion de logs backend. ",
+      "valeur_par_defaut": "15"
+    },
+    {
+      "parametre": "frontend.instrumentations_all_enabled",
+      "description": "Active toutes les instrumentations par défaut de Faro. Surcharge les autres indicateurs d'instrumentation.",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "frontend.instrumentations_errors_enabled",
+      "description": "Active l'instrumentation des erreurs. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "frontend.instrumentations_console_enabled",
+      "description": "Active l'instrumentation de la console.",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "frontend.instrumentations_webvitals_enabled",
+      "description": "Active l'instrumentation des web vitals. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "frontend.instrumentations_tracing_enabled",
+      "description": "Active l'instrumentation du traçage. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "frontend.api_key",
+      "description": "Si custom_endpoint nécessite une authentification, définissez la clé API ici. ",
+      "valeur_par_defaut": ""
+    }
+  ],
+  "quota": [
+    {
+      "parametre": "enabled",
+      "description": "Activer les quotas d'utilisation.  Mettez les quotas à -1 pour illimité. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "org_user",
+      "description": "Limite le nombre d'utilisateurs autorisés par organisation. ",
+      "valeur_par_defaut": "10"
+    },
+    {
+      "parametre": "org_dashboard",
+      "description": "Limite le nombre de dashboards autorisés par organisation. ",
+      "valeur_par_defaut": "100"
+    },
+    {
+      "parametre": "org_data_source",
+      "description": "Limite le nombre de sources de données autorisées par organisation. ",
+      "valeur_par_defaut": "10"
+    },
+    {
+      "parametre": "org_api_key",
+      "description": "Limite le nombre de clés API pouvant être saisies par organisation. ",
+      "valeur_par_defaut": "10"
+    },
+    {
+      "parametre": "org_alert_rule",
+      "description": "Limite le nombre de règles d'alerte pouvant être saisies par organisation. ",
+      "valeur_par_defaut": "100"
+    },
+    {
+      "parametre": "user_org",
+      "description": "Limite le nombre d'organisations qu'un utilisateur peut créer. ",
+      "valeur_par_defaut": "10"
+    },
+    {
+      "parametre": "global_user",
+      "description": "Définit une limite globale d'utilisateurs. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "global_org",
+      "description": "Définit une limite globale sur le nombre d'organisations pouvant être créées. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "global_dashboard",
+      "description": "Définit une limite globale sur le nombre de dashboards pouvant être créés. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "global_api_key",
+      "description": "Définit une limite globale de clés API pouvant être saisies. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "global_session",
+      "description": "Définit une limite globale sur le nombre d'utilisateurs pouvant être connectés en même temps. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "global_alert_rule",
+      "description": "Définit une limite globale sur le nombre de règles d'alerte pouvant être créées. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "global_correlations",
+      "description": "Définit une limite globale sur le nombre de corrélations pouvant être créées. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    },
+    {
+      "parametre": "alerting_rule_evaluation_results",
+      "description": "Limite le nombre de résultats d'évaluation de requête par règle d'alerte. ",
+      "valeur_par_defaut": "-1 (illimité)"
+    }
+  ],
+  "alerting": [
+    {
+      "parametre": "enabled",
+      "description": "Activer ou désactiver Grafana Alerting (unifié). ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "disabled_orgs",
+      "description": "Liste d'ID d'organisations (séparés par des virgules) pour lesquelles désactiver Grafana 8 Unified Alerting. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "admin_config_poll_interval",
+      "description": "Fréquence d'interrogation pour les changements de configuration.  Format de durée (ms, s, m, h, d). ",
+      "valeur_par_defaut": "60s"
+    },
+    {
+      "parametre": "alertmanager_config_poll_interval",
+      "description": "Fréquence d'interrogation pour les changements de configuration d'Alertmanager.  Format de durée. ",
+      "valeur_par_defaut": "60s"
+    },
+    {
+      "parametre": "ha_redis_address",
+      "description": "Adresse ou adresses du serveur Redis pour la haute disponibilité (HA).  Peut être une seule adresse ou une liste séparée par des virgules. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_cluster_mode_enabled",
+      "description": "Mettre à 'true' lors de l'utilisation de Redis en mode Cluster.  Mutuellement exclusif avec ha_redis_sentinel_mode_enabled. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "ha_redis_sentinel_mode_enabled",
+      "description": "Mettre à 'true' lors de l'utilisation de Redis en mode Sentinel.  Mutuellement exclusif avec ha_redis_cluster_mode_enabled.",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "ha_redis_sentinel_master_name",
+      "description": "Nom du maître Redis Sentinel.  Applicable si ha_redis_sentinel_mode_enabled est 'true'. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_username",
+      "description": "Nom d'utilisateur pour s'authentifier auprès de Redis. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_password",
+      "description": "Mot de passe pour s'authentifier auprès de Redis. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_sentinel_username",
+      "description": "Nom d'utilisateur pour s'authentifier auprès de Redis Sentinel. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_sentinel_password",
+      "description": "Mot de passe pour s'authentifier auprès de Redis Sentinel. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_db",
+      "description": "La base de données Redis. ",
+      "valeur_par_defaut": "0"
+    },
+    {
+      "parametre": "ha_redis_prefix",
+      "description": "Un préfixe utilisé pour chaque clé ou canal créé sur le serveur Redis pour la HA. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_peer_name",
+      "description": "Nom du pair de cluster à utiliser comme identifiant.  Si aucun n'est fourni, un nom aléatoire est généré. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_max_conns",
+      "description": "Le nombre maximum de connexions Redis simultanées.",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "ha_redis_tls_enabled",
+      "description": "Activer TLS sur le client utilisé pour communiquer avec le serveur Redis. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "ha_redis_tls_cert_path",
+      "description": "Chemin vers le fichier de certificat client TLS codé en PEM.  Requis si vous utilisez Mutual TLS. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_tls_key_path",
+      "description": "Chemin vers le fichier de clé privée TLS codé en PEM.  Requis si vous utilisez Mutual TLS. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_tls_ca_path",
+      "description": "Chemin vers le fichier de certificats CA codés en PEM. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_tls_server_name",
+      "description": "Surcharge le nom attendu du certificat du serveur Redis. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_tls_insecure_skip_verify",
+      "description": "Ignore la validation du certificat du serveur Redis.",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "ha_redis_tls_cipher_suites",
+      "description": "Surcharge la liste des suites de chiffrement TLS par défaut.",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_redis_tls_min_version",
+      "description": "Surcharge la version TLS minimale par défaut.  Valeurs : VersionTLS10, VersionTLS11, VersionTLS12, VersionTLS13. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "ha_listen_address",
+      "description": "Adresse IP et port d'écoute pour recevoir les messages d'alerte unifiée des autres instances Grafana.  Le port est utilisé pour TCP et UDP. ",
+      "valeur_par_defaut": "0.0.0.0:9094"
+    },
+    {
+      "parametre": "ha_advertise_address",
+      "description": "Adresse IP et port explicites à annoncer aux autres instances Grafana. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_peers",
+      "description": "Liste d'instances initiales (séparées par des virgules, au format <HOTE>:<PORT>) qui forment le cluster HA.  Activer ce paramètre active le mode Haute Disponibilité pour l'alerte. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_peer_timeout",
+      "description": "Temps d'attente pour qu'une instance envoie une notification via Alertmanager.  Format de durée. ",
+      "valeur_par_defaut": "15s"
+    },
+    {
+      "parametre": "ha_label",
+      "description": "Label optionnel à inclure sur chaque paquet et flux pour identifier de manière unique le cluster. [cite: 452, 453]",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "ha_gossip_interval",
+      "description": "Intervalle entre l'envoi de messages gossip.  Format de durée. ",
+      "valeur_par_defaut": "200ms"
+    },
+    {
+      "parametre": "ha_reconnect_timeout",
+      "description": "Durée pendant laquelle tenter de se reconnecter à un pair perdu.  Format de durée. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "ha_push_pull_interval",
+      "description": "Intervalle entre les synchronisations complètes d'état gossip.  Format de durée. ",
+      "valeur_par_defaut": "60s"
+    },
+    {
+      "parametre": "execute_alerts",
+      "description": "Activer ou désactiver l'exécution des règles d'alerte.  L'interface utilisateur d'alerte reste visible. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "evaluation_timeout",
+      "description": "Définit le délai d'expiration de l'évaluation des alertes lors de la récupération des données de la source de données.  Format de durée. ",
+      "valeur_par_defaut": "30s"
+    },
+    {
+      "parametre": "max_attempts",
+      "description": "Définit le nombre maximum de tentatives d'évaluation d'une règle d'alerte avant d'abandonner. ",
+      "valeur_par_defaut": "3"
+    },
+    {
+      "parametre": "min_interval",
+      "description": "Définit l'intervalle minimum à appliquer entre les évaluations de règles.  Format de durée.  Ce paramètre a priorité sur la fréquence de chaque règle individuelle. ",
+      "valeur_par_defaut": "10s"
+    },
+    {
+      "parametre": "screenshots.capture",
+      "description": "Activer les captures d'écran dans les notifications.  Nécessite un service de rendu d'images HTTP distant. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "screenshots.capture_timeout",
+      "description": "Délai d'expiration pour la capture des captures d'écran.  Durée maximale : 30 secondes. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "screenshots.max_concurrent_screenshots",
+      "description": "Nombre maximum de captures d'écran pouvant être prises en même temps (pour toutes les alertes en cours). [cite: 475, 476]",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "screenshots.upload_external_image_storage",
+      "description": "Télécharge les captures d'écran vers le serveur Grafana local ou un stockage distant (Azure, S3, GCS). ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "reserved_labels.disabled_labels",
+      "description": "Liste de labels réservés (séparés par des virgules) ajoutés par le moteur d'alerte Grafana qui doivent être désactivés (ex: disabled_labels=grafana_folder). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "state_history.annotations.max_age",
+      "description": "Configure la durée de stockage des annotations d'alerte.  Format de durée. ",
+      "valeur_par_defaut": "0 (illimité)"
+    },
+    {
+      "parametre": "state_history.annotations.max_annotations_to_keep",
+      "description": "Configure le nombre maximum d'annotations d'alerte que Grafana stocke. ",
+      "valeur_par_defaut": "0 (illimité)"
+    },
+    {
+      "parametre": "prometheus_conversion.rule_query_offset",
+      "description": "Définit le décalage de requête (query offset) aux règles gérées par Grafana importées lorsque query_offset n'est pas défini dans la configuration du groupe de règles d'origine. ",
+      "valeur_par_defaut": "1m"
+    }
+  ],
+  "annotations": [
+    {
+      "parametre": "cleanupjob_batchsize",
+      "description": "Configure la taille du lot pour le travail de nettoyage des annotations (dashboard, API, et alertes). [cite: 486, 487]",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "tags_length",
+      "description": "Applique le nombre maximum autorisé de tags pour toute nouvelle annotation introduite.  Valeur entre 500 et 4096. ",
+      "valeur_par_defaut": "500"
+    },
+    {
+      "parametre": "dashboard.max_age",
+      "description": "Configure la durée de stockage des annotations de dashboard. [cite: 490, 491] Format de durée. ",
+      "valeur_par_defaut": "0 (illimité)"
+    },
+    {
+      "parametre": "dashboard.max_annotations_to_keep",
+      "description": "Configure le nombre maximum d'annotations de dashboard que Grafana stocke. ",
+      "valeur_par_defaut": "0 (illimité)"
+    },
+    {
+      "parametre": "api.max_age",
+      "description": "Configure la durée de stockage des annotations API. [cite: 494, 495] Format de durée. ",
+      "valeur_par_defaut": "0 (illimité)"
+    },
+    {
+      "parametre": "api.max_annotations_to_keep",
+      "description": "Configure le nombre maximum d'annotations API que Grafana conserve. ",
+      "valeur_par_defaut": "0 (illimité)"
+    }
+  ],
+  "ui_features": [
+    {
+      "parametre": "explore.enabled",
+      "description": "Activer ou désactiver la section Explore. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "explore.defaultTimeOffset",
+      "description": "Définit un décalage temporel par défaut par rapport à 'now' sur le sélecteur de temps.  Format de durée. ",
+      "valeur_par_defaut": "1h"
+    },
+    {
+      "parametre": "explore.hide_logs_download",
+      "description": "Afficher ou masquer le bouton de téléchargement des logs dans Explore. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "help.enabled",
+      "description": "Activer ou désactiver la section Aide.",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "profile.enabled",
+      "description": "Activer ou désactiver la section Profil. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "news.news_feed_enabled",
+      "description": "Active la section du fil d'actualités. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "query.concurrent_query_limit",
+      "description": "Définit le nombre de requêtes pouvant être exécutées simultanément dans un panneau de source de données mixte. ",
+      "valeur_par_defaut": "Nombre de CPUs"
+    },
+    {
+      "parametre": "query_history.enabled",
+      "description": "Activer ou désactiver l'historique des requêtes dans Explore. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "short_links.expire_time",
+      "description": "Temps d'expiration en jours pour les liens courts jamais consultés. [cite: 506, 507] 0 signifie nettoyage toutes les 10 minutes.  -1 désactive l'expiration. ",
+      "valeur_par_defaut": "7"
+    },
+    {
+      "parametre": "date_formats.full_date",
+      "description": "Format de date complet utilisé par le sélecteur de plage horaire et autres.  Utilise les jetons de format Moment.js. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "date_formats.intervals",
+      "description": "Formats d'intervalles utilisés dans le graphique (ex: interval_second = HH:mm:ss, interval_day = MM/DD). [cite: 662, 663]",
+      "valeur_par_defaut": "Voir description "
+    },
+    {
+      "parametre": "date_formats.use_browser_locale",
+      "description": "Mettre à 'true' pour que les formats de date soient dérivés de la localisation de votre navigateur.  Fonctionnalité expérimentale. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "date_formats.default_timezone",
+      "description": "Utilisé comme fuseau horaire par défaut pour les préférences utilisateur.  'browser' ou un nom de fuseau horaire IANA (ex: UTC). ",
+      "valeur_par_defaut": "browser"
+    },
+    {
+      "parametre": "date_formats.default_week_start",
+      "description": "Définit le début de semaine par défaut : 'saturday', 'sunday', 'monday' ou 'browser'. ",
+      "valeur_par_defaut": "browser"
+    },
+    {
+      "parametre": "time_picker.quick_ranges",
+      "description": "Définit l'ensemble par défaut de plages horaires relatives rapides dans le sélecteur de temps.  Doit être un format JSON valide. ",
+      "valeur_par_defaut": "Non spécifié (utilise les plages par défaut de Grafana) "
+    },
+    {
+      "parametre": "expressions.enabled",
+      "description": "Mettre à 'false' pour désactiver les expressions et les masquer dans l'interface utilisateur. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "expressions.sql_expression_cell_limit",
+      "description": "Définit le nombre maximum de cellules pouvant être passées à une expression SQL. ",
+      "valeur_par_defaut": "100000"
+    },
+    {
+      "parametre": "expressions.sql_expression_cell_output_limit",
+      "description": "Définit le nombre maximum de cellules pouvant être retournées par une expression SQL. ",
+      "valeur_par_defaut": "100000"
+    },
+    {
+      "parametre": "expressions.sql_expression_timeout",
+      "description": "Durée pendant laquelle une expression SQL s'exécutera avant d'être annulée. ",
+      "valeur_par_defaut": "10s"
+    },
+    {
+      "parametre": "geomap.default_baselayer_config",
+      "description": "Configuration JSON utilisée pour définir la carte de base par défaut.  Options : 'carto', 'esriXYZTiles', 'xyzTiles', 'standard'. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "geomap.enable_custom_baselayers",
+      "description": "Mettre à 'false' pour désactiver le chargement d'autres cartes de base personnalisées. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "rbac",
+      "description": "Section pour le contrôle d'accès basé sur les rôles (RBAC).  Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "navigation.app_sections",
+      "description": "Déplace un plugin d'application (par son ID) vers une section de navigation spécifique.  Format : <pluginId> = <sectionId> <sortWeight>. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "navigation.app_standalone_pages",
+      "description": "Déplace une page de plugin d'application individuelle (par son chemin) vers une section de navigation spécifique.  Format : <pageUrl> = <sectionId> <sortWeight>. ",
+      "valeur_par_defaut": ""
+    }
+  ],
+  "metrics_tracing": [
+    {
+      "parametre": "metrics.enabled",
+      "description": "Activer le rapport de métriques.  Disponible via l'API HTTP <URL>/metrics. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "metrics.interval_seconds",
+      "description": "Intervalle d'envoi/écriture lors de l'envoi de métriques à un TSDB externe. ",
+      "valeur_par_defaut": "10"
+    },
+    {
+      "parametre": "metrics.disable_total_stats",
+      "description": "Si 'true', la génération totale de statistiques (métriques stat_totals_*) est désactivée. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "metrics.total_stats_collector_interval_seconds",
+      "description": "Définit l'intervalle du collecteur de statistiques totales. ",
+      "valeur_par_defaut": "1800"
+    },
+    {
+      "parametre": "metrics.basic_auth_username",
+      "description": "Si 'basic_auth_username' et 'basic_auth_password' sont définis, une authentification de base est requise pour accéder au point de terminaison des métriques. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "metrics.basic_auth_password",
+      "description": "Si 'basic_auth_username' et 'basic_auth_password' sont définis, une authentification de base est requise pour accéder au point de terminaison des métriques. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "metrics.environment_info",
+      "description": "Ajoute des dimensions à la métrique grafana_environment_info (ex: exampleLabel1 = exampleValue1). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "metrics.graphite.address",
+      "description": "Activer en définissant l'adresse pour envoyer les métriques Grafana internes à Graphite.  Format : <Hostname ou ip>:port. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "metrics.graphite.prefix",
+      "description": "Préfixe de métrique Graphite. ",
+      "valeur_par_defaut": "prod.grafana.%(instance_name)s"
+    },
+    {
+      "parametre": "grafana_com.url",
+      "description": "URL pour grafana.com, utilisée pour le fournisseur d'identité d'authentification par défaut pour Grafana Cloud. [cite: 519, 520]",
+      "valeur_par_defaut": "https://grafana.com"
+    },
+    {
+      "parametre": "tracing.jaeger.address",
+      "description": "(Obsolète)  La destination host:port pour rapporter les spans (ex: localhost:6831).  Peut être défini avec les variables d'environnement JAEGER_AGENT_HOST/PORT. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "tracing.jaeger.always_included_tag",
+      "description": "(Obsolète)  Liste de tags (séparés par des virgules) à inclure dans tous les nouveaux spans (ex: tag1:value1,tag2:value2). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "tracing.jaeger.sampler_type",
+      "description": "(Obsolète)  Spécifie le type d'échantillonneur : 'const', 'probabilistic', 'ratelimiting', ou 'remote'. ",
+      "valeur_par_defaut": "const"
+    },
+    {
+      "parametre": "tracing.jaeger.sampler_param",
+      "description": "(Obsolète)  Le paramètre de configuration de l'échantillonneur.  Dépend du sampler_type. ",
+      "valeur_par_defaut": "1"
+    },
+    {
+      "parametre": "tracing.jaeger.sampling_server_url",
+      "description": "(Obsolète)  L'URL d'un gestionnaire d'échantillonnage fournissant une stratégie d'échantillonnage. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "tracing.jaeger.zipkin_propagation",
+      "description": "(Obsolète)  Contrôle s'il faut utiliser le format de propagation de span Zipkin (en-têtes x-b3- HTTP). [cite: 535, 536]",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "tracing.jaeger.disable_shared_zipkin_spans",
+      "description": "(Obsolète)  Mettre à 'true' désactive les spans RPC partagés. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "tracing.opentelemetry.custom_attributes",
+      "description": "Liste d'attributs (séparés par des virgules) à inclure dans tous les nouveaux spans (ex: key1:value1,key2:value2). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "tracing.opentelemetry.sampler_type",
+      "description": "Spécifie le type d'échantillonneur : 'const', 'probabilistic', 'ratelimiting', ou 'remote'. ",
+      "valeur_par_defaut": "const"
+    },
+    {
+      "parametre": "tracing.opentelemetry.sampler_param",
+      "description": "Paramètre de configuration de l'échantillonneur (0, 1, ou décimal entre 0 et 1). ",
+      "valeur_par_defaut": "1"
+    },
+    {
+      "parametre": "tracing.opentelemetry.sampling_server_url",
+      "description": "Si sampler_type est 'remote', spécifie l'URL du serveur d'échantillonnage. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "tracing.opentelemetry.jaeger.address",
+      "description": "La destination <HOTE>:<PORT> pour rapporter les spans (ex: localhost:14268/api/traces). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "tracing.opentelemetry.jaeger.propagation",
+      "description": "Spécifie le format de propagation de la carte texte.  Valeurs : 'jaeger', 'w3c' (ou 'jaeger,w3c'). [cite: 547, 548]",
+      "valeur_par_defaut": "w3c"
+    },
+    {
+      "parametre": "tracing.opentelemetry.otlp.address",
+      "description": "La destination <HOTE>:<PORT> pour rapporter les spans (ex: localhost:4317). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "tracing.opentelemetry.otlp.propagation",
+      "description": "Spécifie le format de propagation de la carte texte.  Valeurs : 'jaeger', 'w3c' (ou 'jaeger,w3c'). [cite: 550, 551]",
+      "valeur_par_defaut": "w3c"
+    },
+    {
+      "parametre": "tracing.opentelemetry.otlp.insecure",
+      "description": "Bascule le paramètre de communication non sécurisée.  Si 'false', le client OTLP utilisera les informations d'identification TLS. ",
+      "valeur_par_defaut": "true"
+    }
+  ],
+  "plugins_rendering": [
+    {
+      "parametre": "external_image_storage.provider",
+      "description": "Contrôle comment les images doivent être rendues publiques.  Options : 's3', 'webdav', 'gcs', 'azure_blob', 'local'.  Si vide, l'action de téléversement est ignorée. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.s3.endpoint",
+      "description": "URL de point de terminaison optionnelle pour surcharger le point de terminaison S3 généré par défaut. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.s3.path_style_access",
+      "description": "Mettre à 'true' pour forcer l'adressage de type chemin (path-style) dans les requêtes S3. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "external_image_storage.s3.bucket_url",
+      "description": "(Rétrocompatibilité) URL du compartiment (bucket) pour S3. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.s3.bucket",
+      "description": "Nom du compartiment pour S3 (ex: grafana.snapshot). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.s3.region",
+      "description": "Nom de la région pour S3 (ex: us-east-1). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.s3.path",
+      "description": "Chemin supplémentaire optionnel à l'intérieur du compartiment. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.s3.access_key",
+      "description": "Clé d'accès.  Nécessite les permissions s3:PutObject et s3:PutObjectAcl. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.s3.secret_key",
+      "description": "Clé secrète. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.webdav.url",
+      "description": "URL où Grafana envoie la requête PUT avec les images. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.webdav.username",
+      "description": "Nom d'utilisateur pour l'authentification de base (basic auth). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.webdav.password",
+      "description": "Mot de passe pour l'authentification de base. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.webdav.public_url",
+      "description": "URL optionnelle à envoyer aux utilisateurs dans les notifications.  '{{file}}' est remplacé par le nom du fichier. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.gcs.key_file",
+      "description": "Chemin optionnel vers le fichier de clé JSON associé à un compte de service Google.  Si non fourni, essaie d'utiliser les 'application default credentials'. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.gcs.bucket",
+      "description": "Nom du compartiment (Bucket Name) sur Google Cloud Storage. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.gcs.path",
+      "description": "Chemin supplémentaire optionnel à l'intérieur du compartiment. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.gcs.enable_signed_urls",
+      "description": "Si 'true', Grafana crée une URL signée pour l'image téléversée sur GCS. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "external_image_storage.gcs.signed_url_expiration",
+      "description": "Définit l'expiration de l'URL signée. ",
+      "valeur_par_defaut": "7 jours"
+    },
+    {
+      "parametre": "external_image_storage.azure_blob.account_name",
+      "description": "Nom du compte de stockage. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.azure_blob.account_key",
+      "description": "Clé du compte de stockage. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.azure_blob.container_name",
+      "description": "Nom du conteneur où stocker les images 'Blob'.  La création préalable du conteneur blob est requise.  Seuls les conteneurs publics sont supportés. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "external_image_storage.azure_blob.sas_token_expiration_days",
+      "description": "Nombre de jours de validité du jeton SAS.  Si spécifié, un jeton SAS est attaché à l'URL de l'image. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "rendering.renderer_token",
+      "description": "Un jeton d'authentification envoyé et vérifié par le service de rendu distant. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rendering.server_url",
+      "description": "URL vers un service de rendu d'images HTTP distant (ex: http://localhost:8081/render). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rendering.callback_url",
+      "description": "Si le service de rendu s'exécute sur un serveur différent, configurez ceci à une URL où Grafana est joignable (ex: http://grafana.domain/). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "rendering.concurrent_render_request_limit",
+      "description": "Limite le nombre de requêtes de rendu concurrentes (lorsque le point de terminaison /render est utilisé). [cite: 582, 583]",
+      "valeur_par_defaut": "30"
+    },
+    {
+      "parametre": "rendering.default_image_width",
+      "description": "Configure la largeur de l'image rendue. ",
+      "valeur_par_defaut": "1000"
+    },
+    {
+      "parametre": "rendering.default_image_height",
+      "description": "Configure la hauteur de l'image rendue. ",
+      "valeur_par_defaut": "500"
+    },
+    {
+      "parametre": "rendering.default_image_scale",
+      "description": "Configure l'échelle de l'image rendue. ",
+      "valeur_par_defaut": "1"
+    },
+    {
+      "parametre": "panels.enable_alpha",
+      "description": "Mettre à 'true' si vous voulez tester des panneaux alpha qui ne sont pas encore prêts. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "panels.disable_sanitize_html",
+      "description": "Si 'true', Grafana autorise les balises <script> dans les panneaux de texte.  Non recommandé (active les vulnérabilités XSS). ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugins.enable_alpha",
+      "description": "Mettre à 'true' si vous voulez tester des plugins alpha. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugins.allow_loading_unsigned_plugins",
+      "description": "Liste d'identifiants de plugins (séparés par des virgules) à charger même s'ils ne sont pas signés.  Non recommandé. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "plugins.plugin_admin_enabled",
+      "description": "Permet aux administrateurs Grafana d'installer/désinstaller/mettre à jour les plugins depuis l'interface utilisateur. ",
+      "valeur_par_defaut": "true"
+    },
+    {
+      "parametre": "plugins.plugin_admin_external_manage_enabled",
+      "description": "Mettre à 'true' pour activer la gestion externe des plugins.  Applicable uniquement aux utilisateurs de Grafana Cloud. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugins.plugin_catalog_url",
+      "description": "URL personnalisée d'installation/en savoir plus pour les plugins d'entreprise. ",
+      "valeur_par_defaut": "https://grafana.com/grafana/plugins/"
+    },
+    {
+      "parametre": "plugins.plugin_catalog_hidden_plugins",
+      "description": "Liste d'identifiants de plugins (séparés par des virgules) à cacher dans le catalogue de plugins. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "plugins.public_key_retrieval_disabled",
+      "description": "Désactive le téléchargement de la clé publique pour vérifier la signature du plugin. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugins.public_key_retrieval_on_startup",
+      "description": "Force le téléchargement de la clé publique pour la vérification de la signature du plugin au démarrage. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugins.disable_plugins",
+      "description": "Liste d'identifiants de plugins (séparés par des virgules) à ne pas charger (y compris les plugins principaux). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "plugins.preinstall",
+      "description": "Liste d'identifiants de plugins (séparés par des virgules) à installer au démarrage, en utilisant le catalogue Grafana.  Format : plugin_id@version ou plugin_id@version@url. [cite: 604, 607]",
+      "valeur_par_defaut": "Non spécifié (Grafana installe certains plugins suggérés) "
+    },
+    {
+      "parametre": "plugins.preinstall_sync",
+      "description": "Identique à 'preinstall', mais installe les plugins de manière synchrone avant de démarrer Grafana. [cite: 609, 610]",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "plugins.preinstall_disabled",
+      "description": "Cette option désactive tous les plugins préinstallés. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_timezone",
+      "description": "Indique au navigateur headless d'utiliser un fuseau horaire par défaut.  Se rabat sur la variable d'environnement TZ si non défini. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_language",
+      "description": "Indique au navigateur headless d'utiliser une langue par défaut.  Format 'Accept-Language' (ex: 'fr-CH, fr;q=0.9'). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_viewport_device_scale_factor",
+      "description": "Indique au navigateur headless d'utiliser un facteur d'échelle d'appareil par défaut.  Une valeur plus élevée produit des images plus détaillées (DPI plus élevé). ",
+      "valeur_par_defaut": "1"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_ignore_https_errors",
+      "description": "Indique au navigateur headless d'ignorer ou non les erreurs HTTPS.  Non recommandé. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_verbose_logging",
+      "description": "Indique au navigateur headless de capturer et journaliser des informations verbeuses. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_dumpio",
+      "description": "Indique au navigateur headless de sortir ses messages de débogage et d'erreur dans le processus du service de rendu.  Utile pour le dépannage. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_timing_metrics",
+      "description": "Indique au navigateur headless d'enregistrer ou non les métriques de durée pour chaque étape de rendu. ",
+      "valeur_par_defaut": "false"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_args",
+      "description": "Arguments supplémentaires à passer à l'instance du navigateur headless.  Séparez les arguments par des virgules. ",
+      "valeur_par_defaut": "--no-sandbox,--disable-gpu"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_chrome_bin",
+      "description": "Configure le plugin pour utiliser un binaire de navigateur différent.  Non recommandé. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_mode",
+      "description": "Indique comment les instances de navigateur headless sont créées.  'default' (nouveau navigateur par requête), 'clustered' (limite max), 'reusable' (un navigateur, nouvelle page). [cite: 646, 647, 648]",
+      "valeur_par_defaut": "default"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_clustering_mode",
+      "description": "Si rendering_mode = clustered, indique comment clusteriser : 'browser' ou 'context' (pages incognito). [cite: 649, 650]",
+      "valeur_par_defaut": "browser"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_clustering_max_concurrency",
+      "description": "Si rendering_mode = clustered, définit le nombre maximum d'instances (navigateurs ou pages) pouvant s'exécuter simultanément. ",
+      "valeur_par_defaut": "5"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_clustering_timeout",
+      "description": "Si rendering_mode = clustered, spécifie la durée avant qu'une requête de rendu n'expire. ",
+      "valeur_par_defaut": "30s"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_viewport_max_width",
+      "description": "Limite la largeur maximale du viewport pouvant être demandée. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_viewport_max_height",
+      "description": "Limite la hauteur maximale du viewport pouvant être demandée.",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.rendering_viewport_max_device_scale_factor",
+      "description": "Limite le facteur d'échelle d'appareil maximal du viewport pouvant être demandé. ",
+      "valeur_par_defaut": "Non spécifié"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.grpc_host",
+      "description": "Change l'hôte d'écoute du serveur gRPC. ",
+      "valeur_par_defaut": "127.0.0.1"
+    },
+    {
+      "parametre": "plugin.grafana-image-renderer.grpc_port",
+      "description": "Change le port d'écoute du serveur gRPC. ",
+      "valeur_par_defaut": "0 (utilise un port non utilisé) "
+    }
+  ],
+  "other_features": [
+    {
+      "parametre": "live.max_connections",
+      "description": "Spécifie le nombre maximum de connexions au point de terminaison WebSocket Grafana Live par instance de serveur Grafana.  0 désactive Grafana Live, -1 signifie illimité. ",
+      "valeur_par_defaut": "100"
+    },
+    {
+      "parametre": "live.allowed_origins",
+      "description": "Liste d'origines supplémentaires (séparées par des virgules) acceptées par Grafana Live.  Les motifs supportent le joker '*'. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "live.ha_engine",
+      "description": "(Expérimental)  Le moteur de haute disponibilité (HA) pour Grafana Live.  La seule valeur possible est 'redis'. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "live.ha_engine_address",
+      "description": "(Expérimental)  Chaîne d'adresse du moteur HA sélectionné (ex: host:port pour Redis). ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "enterprise",
+      "description": "Section pour la configuration de Grafana Enterprise. Voir la documentation pour les détails.",
+      "valeur_par_defaut": "Non applicable"
+    },
+    {
+      "parametre": "feature_toggles.enable",
+      "description": "Clés de fonctionnalités à activer, séparées par des espaces. ",
+      "valeur_par_defaut": ""
+    },
+    {
+      "parametre": "feature_toggles.[NOM_DU_FEATURE_TOGGLE]",
+      "description": "Permet de désactiver un feature toggle spécifique qui est activé par défaut (ex: exploreMixedDatasource = false). [cite: 658, 659]",
+      "valeur_par_defaut": "true (ou activé)"
+    }
+  ]
+}

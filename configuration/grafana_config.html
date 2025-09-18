@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Configuration Grafana.ini</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('grafanaConfigGenerator', () => ({
+                configSchema: {},
+                formData: {},
+                sections: [],
+                activeSection: '',
+                tooltip: { visible: false, description: '', defaultValue: '', top: 0, left: 0 },
+                copySuccess: false,
+                isLoading: true,
+                error: null,
+
+                async init() {
+                    this.isLoading = true;
+                    this.error = null;
+                    try {
+                        // Chargement du fichier JSON depuis le même répertoire
+                        const response = await fetch('./grafana_enhanced.json');
+                        if (!response.ok) {
+                            throw new Error(`Erreur HTTP ! Statut: ${response.status}`);
+                        }
+                        const grafanaJsonData = await response.json();
+                        
+                        this.configSchema = grafanaJsonData;
+                        this.sections = Object.keys(this.configSchema);
+                        this.activeSection = this.sections[0] || '';
+
+                        for (const section in this.configSchema) {
+                            this.formData[section] = {};
+                            this.configSchema[section].forEach(param => {
+                                // Laisser le champ vide si la valeur par défaut contient "Non Spécifié"
+                                let defaultValue = param.valeur_par_defaut || '';
+                                if (defaultValue.toLowerCase().includes('non spécifié')) {
+                                    defaultValue = '';
+                                }
+                                this.formData[section][param.parametre] = defaultValue;
+                            });
+                        }
+                    } catch (e) {
+                        this.error = `Impossible de charger 'grafana_enhanced.json'. Assurez-vous qu'il est dans le même dossier et que vous utilisez un serveur web local pour accéder à cette page.`;
+                        console.error(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                scrollToSection(section) {
+                    this.activeSection = section;
+                    const el = document.getElementById(section);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                },
+
+                updateActiveSectionOnScroll() {
+                    let currentSection = '';
+                    const scrollPosition = window.scrollY + (window.innerHeight / 3);
+                    this.sections.forEach(section => {
+                        const el = document.getElementById(section);
+                        if (el && el.offsetTop <= scrollPosition) {
+                            currentSection = section;
+                        }
+                    });
+                    if (currentSection) {
+                        this.activeSection = currentSection;
+                    }
+                },
+
+                showTooltip(event, description, defaultValue) {
+                    this.tooltip.description = description;
+                    this.tooltip.defaultValue = defaultValue;
+                    this.tooltip.top = event.clientY + 15;
+                    this.tooltip.left = event.clientX + 15;
+                    this.tooltip.visible = true;
+                },
+
+                hideTooltip() {
+                    this.tooltip.visible = false;
+                },
+
+                copyToClipboard() {
+                    if(this.generatedIniContent) {
+                        navigator.clipboard.writeText(this.generatedIniContent);
+                        this.copySuccess = true;
+                        setTimeout(() => { this.copySuccess = false; }, 2000);
+                    }
+                },
+
+                get generatedIniContent() {
+                    if (!this.configSchema || Object.keys(this.configSchema).length === 0) return '# Veuillez d\'abord charger une configuration valide.';
+                    
+                    let output = `# Fichier de configuration généré le ${new Date().toLocaleString()}\n`;
+                    for (const sectionName in this.formData) {
+                        const paramsInSection = this.formData[sectionName];
+                        let sectionContent = '';
+                        for (const paramName in paramsInSection) {
+                            const value = paramsInSection[paramName];
+                            const paramSchema = this.configSchema[sectionName].find(p => p.parametre === paramName);
+                            
+                            let isChanged = value !== paramSchema.valeur_par_defaut;
+                            
+                            // Si la valeur est vide et que le défaut était "Non spécifié", ce n'est pas un changement.
+                            if ((value === null || value.trim() === '') && paramSchema.valeur_par_defaut.toLowerCase().includes('non spécifié')) {
+                                isChanged = false;
+                            }
+
+                            if (isChanged) {
+                                if (sectionContent === '') {
+                                    sectionContent += `\n[${sectionName}]\n`;
+                                }
+                                sectionContent += `; ${paramSchema.description.replace(/\n/g, '\n; ')}\n`;
+                                sectionContent += `${paramName} = ${value}\n`;
+                            }
+                        }
+                        if (sectionContent) {
+                            output += sectionContent;
+                        }
+                    }
+                    return output.trim();
+                }
+            }));
+        });
+    </script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="icon" href="https://grafana.com/static/assets/img/fav32.png">
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body
+    x-data="grafanaConfigGenerator"
+    x-init="init()"
+    @scroll.window.debounce.150ms="updateActiveSectionOnScroll()"
+    class="bg-slate-100 text-slate-800 font-sans antialiased"
+    x-cloak
+>
+    <!-- Écran de chargement et d'erreur -->
+    <div x-show="isLoading || error" class="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div x-show="isLoading" class="text-center">
+             <svg class="animate-spin h-10 w-10 text-sky-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 text-lg font-semibold text-slate-700">Chargement de la configuration...</p>
+        </div>
+        <div x-show="error" class="text-center bg-red-50 border border-red-200 p-8 rounded-lg shadow-lg max-w-lg">
+             <h3 class="text-2xl font-bold text-red-700">Erreur de chargement</h3>
+            <p x-text="error" class="mt-2 text-red-600"></p>
+        </div>
+    </div>
+
+    <div x-show="!isLoading && !error" class="flex min-h-screen">
+        <!-- Barre latérale de navigation -->
+        <aside class="fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 p-6 overflow-y-auto hidden md:block">
+            <div class="flex items-center gap-3 mb-8">
+                <svg class="h-8 w-8 text-orange-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.25a.75.75 0 01.75.75v18a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75z" fill="currentColor"></path><path d="M12 2.25a.75.75 0 01.75.75v18a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75z" transform="rotate(90 12 12)" fill="currentColor"></path><path d="M12 2.25a.75.75 0 01.75.75v18a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75z" transform="rotate(45 12 12)" fill="currentColor"></path><path d="M12 2.25a.75.75 0 01.75.75v18a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75z" transform="rotate(-45 12 12)" fill="currentColor"></path></svg>
+                <h1 class="text-xl font-bold text-slate-900">Grafana.ini</h1>
+            </div>
+            <nav>
+                <ul>
+                    <template x-for="section in sections" :key="section">
+                        <li>
+                            <a
+                                :href="'#' + section"
+                                @click.prevent="scrollToSection(section)"
+                                class="capitalize block px-4 py-2 my-1 rounded-md text-sm font-medium transition-colors duration-150"
+                                :class="{
+                                    'bg-sky-100 text-sky-700 font-semibold': activeSection === section,
+                                    'text-slate-600 hover:bg-slate-100 hover:text-slate-900': activeSection !== section
+                                }"
+                                x-text="section.replace(/_/g, ' ')"
+                            ></a>
+                        </li>
+                    </template>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Contenu principal -->
+        <main class="flex-1 md:ml-64 lg:mr-[36rem] p-4 sm:p-6 lg:p-8">
+            <div class="max-w-4xl mx-auto">
+                <template x-for="section in sections" :key="section">
+                    <section :id="section" class="mb-12 scroll-mt-24">
+                        <h2 class="text-3xl font-bold text-slate-900 capitalize border-b pb-2 mb-6" x-text="section.replace(/_/g, ' ')"></h2>
+                        <div class="grid grid-cols-1 gap-6">
+                            <template x-for="param in configSchema[section]" :key="param.parametre">
+                                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                                    <label :for="section + '-' + param.parametre" class="flex items-center text-lg font-semibold text-slate-800 mb-3">
+                                        <span x-text="param.parametre"></span>
+                                        <div class="relative ml-2" @mouseenter="showTooltip($event, param.description, param.valeur_par_defaut)" @mouseleave="hideTooltip()">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 hover:text-sky-500 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    </label>
+                                    <input
+                                        :id="section + '-' + param.parametre"
+                                        type="text"
+                                        class="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
+                                        :placeholder="'Défaut : ' + param.valeur_par_defaut"
+                                        x-model="formData[section][param.parametre]"
+                                    >
+                                </div>
+                            </template>
+                        </div>
+                    </section>
+                </template>
+            </div>
+        </main>
+
+        <!-- Panneau de résultat à droite -->
+        <aside class="fixed top-0 right-0 h-screen w-[36rem] hidden lg:flex flex-col p-4">
+            <div class="bg-slate-800 rounded-lg shadow-2xl overflow-hidden h-full flex flex-col">
+                <div class="flex-shrink-0 flex justify-between items-center p-4 bg-slate-900">
+                    <h3 class="text-lg font-semibold text-white">grafana.ini généré</h3>
+                    <button @click="copyToClipboard()" class="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-md text-sm hover:bg-sky-700 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span x-text="copySuccess ? 'Copié !' : 'Copier'"></span>
+                    </button>
+                </div>
+                <pre class="flex-1 overflow-y-auto p-4"><code class="text-slate-300 text-sm whitespace-pre-wrap" x-text="generatedIniContent"></code></pre>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- Tooltip Global -->
+    <div
+        x-show="tooltip.visible"
+        x-transition
+        :style="`top: ${tooltip.top}px; left: ${tooltip.left}px;`"
+        class="fixed z-50 p-3 bg-slate-800 text-white text-sm rounded-md shadow-lg max-w-xs pointer-events-none"
+    >
+        <div class="font-bold mb-2">Description</div>
+        <p class="text-slate-300" x-text="tooltip.description"></p>
+        <div class="font-bold mt-3 mb-1">Valeur par défaut</div>
+        <code class="text-sky-300 bg-slate-700 px-1 py-0.5 rounded" x-text="tooltip.defaultValue"></code>
+    </div>
+
+</body>
+</html>
