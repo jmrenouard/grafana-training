@@ -37,351 +37,348 @@ Exemples de requêtes par exportateur / service :
 
 Comment puis-je obtenir le nombre de requêtes sur une période donnée (la période du dashboard) :
 
-
-
-sum by (uri) (increase(http_requests_total[$__range ]))
+```promql
+sum by (uri) (increase(http_requests_total[$__range]))
+```
 
 Combien de redémarrages de pod par minute ?
 
-
-
+```promql
 rate(kube_pod_container_status_restarts_total{job="kube-state-metrics",namespace="default"}[15m]) * 60 * 15
+```
 
 ## **Exemples de Requêtes**
 
 Montre-moi tous les noms de métriques pour le job=app :
 
-
-
+```promql
 group ({job="app"}) by (__name__)
+```
 
 Combien de nœuds sont démarrés (up) ?
 
-
-
+```promql
 up
+```
 
 Combiner les valeurs de 2 vecteurs différents (Nom d'hôte avec une métrique) :
 
-
-
+```promql
 up * on(instance) group_left(nodename) (node_uname_info)
+```
 
 Exclure des labels :
 
-
-
+```promql
 sum without(job) (up * on(instance)  group_left(nodename)  (node_uname_info))
+```
 
 Compter les cibles (targets) par job :
 
-
-
+```promql
 count by (job) (up)
+```
 
 Quantité de mémoire disponible :
 
-
-
+```promql
 node_memory_MemAvailable_bytes
+```
 
 Quantité de mémoire disponible en Mo :
 
-
-
+```promql
 node_memory_MemAvailable_bytes/1024/1024
+```
 
 Quantité de mémoire disponible en Mo il y a 10 minutes :
 
-
-
+```promql
 node_memory_MemAvailable_bytes/1024/1024 offset 10m
+```
 
 Moyenne de la mémoire disponible sur les 5 dernières minutes :
 
-
-
+```promql
 avg_over_time(node_memory_MemAvailable_bytes[5m])/1024/1024
+```
 
 Utilisation de la mémoire en pourcentage :
 
-
-
+```promql
 100 * (1 - ((avg_over_time(node_memory_MemFree_bytes[10m]) + avg_over_time(node_memory_Cached_bytes[10m]) + avg_over_time(node_memory_Buffers_bytes[10m])) / avg_over_time(node_memory_MemTotal_bytes[10m])))
+```
 
 Utilisation du CPU :
 
-
-
+```promql
 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle", instance="my-instance"}[5m])) * 100 )
+```
 
 Utilisation du CPU avec un décalage de 24 heures :
 
-
-
+```promql
 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle", instance="my-instance"}[5m] offset 24h)) * 100 )
+```
 
 Utilisation du CPU par cœur :
 
-
-
+```promql
 ( (1 - rate(node_cpu_seconds_total{job="node-exporter", mode="idle", instance="$instance"}[$__interval])) / ignoring(cpu) group_left count without (cpu)( node_cpu_seconds_total{job="node-exporter", mode="idle", instance="$instance"}) )
+```
 
 Utilisation du CPU par nœud :
 
-
-
-100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[10m]) * 100\) * on(instance) group_left(nodename) (node_uname_info))
+```promql
+100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[10m]) * 100) * on(instance) group_left(nodename) (node_uname_info))
+```
 
 Mémoire disponible par nœud :
 
-
-
+```promql
 node_memory_MemAvailable_bytes * on(instance) group_left(nodename) (node_uname_info)
+```
 
 Ou si vous dépendez des labels d'autres métriques :
 
-
-
+```promql
 (node_memory_MemTotal_bytes{job="node-exporter"} - node_memory_MemFree_bytes{job="node-exporter"} - node_memory_Buffers_bytes{job="node-exporter"} - node_memory_Cached_bytes{job="node-exporter"}) * on(instance) group_left(nodename) (node_uname_info{nodename=~"$nodename"})
+```
 
 Charge moyenne (Load Average) en pourcentage :
 
-
-
+```promql
 avg(node_load1{instance=~"$name", job=~"$job"}) /  count(count(node_cpu_seconds_total{instance=~"$name", job=~"$job"}) by (cpu)) * 100
+```
 
 Charge moyenne par instance :
 
-
-
+```promql
 sum(node_load5{}) by (instance) / count(node_cpu_seconds_total{mode="user"}) by (instance) * 100
+```
 
 Charge moyenne (moyenne par instance_id : disons que la métrique a 2 valeurs de label identiques mais qui sont différentes) :
 
-
-
-avg by (instance_id, instance) (node_load1{job=~"node-exporter", aws_environment="dev", instance="debug-dev"})  
-# {instance="debug-dev",instance_id="i-aaaaaaaaaaaaaaaaa"}  
+```promql
+avg by (instance_id, instance) (node_load1{job=~"node-exporter", aws_environment="dev", instance="debug-dev"})
+# {instance="debug-dev",instance_id="i-aaaaaaaaaaaaaaaaa"}
 # {instance="debug-dev",instance_id="i-bbbbbbbbbbbbbbbbb"}
+```
 
 Disque disponible par nœud :
 
-
-
+```promql
 node_filesystem_free_bytes{mountpoint="/"} * on(instance) group_left(nodename) (node_uname_info)
+```
 
 IO Disque par nœud : Sortant :
 
-
-
+```promql
 sum(rate(node_disk_read_bytes_total[1m])) by (device, instance) * on(instance) group_left(nodename) (node_uname_info)
+```
 
 IO Disque par nœud : Entrant :
 
-
-
+```promql
 sum(rate(node_disk_written_bytes_total{job="node"}[1m])) by (device, instance) * on(instance) group_left(nodename) (node_uname_info)
+```
 
 IO Réseau par nœud :
 
-
-
-sum(rate(node_network_receive_bytes_total[1m])) by (device, instance) * on(instance) group_left(nodename) (node_uname_info)  
+```promql
+sum(rate(node_network_receive_bytes_total[1m])) by (device, instance) * on(instance) group_left(nodename) (node_uname_info)
 sum(rate(node_network_transmit_bytes_total[1m])) by (device, instance) * on(instance) group_left(nodename) (node_uname_info)
+```
 
 Redémarrages de processus :
 
-
-
+```promql
 changes(process_start_time_seconds{job=~".+"}[15m])
+```
 
 Rotation de conteneurs (Cycling) :
 
-
-
-(time() - container_start_time_seconds{job=~".+"}) \< 60
+```promql
+(time() - container_start_time_seconds{job=~".+"}) < 60
+```
 
 Histogramme :
 
-
-
+```promql
 histogram_quantile(1.00, sum(rate(prometheus_http_request_duration_seconds_bucket[5m])) by (handler, le)) * 1e3
+```
 
 Métriques d'il y a 24 heures (utile pour comparer aujourd'hui avec hier) :
 
+```promql
+# requête a
+total_number_of_errors{instance="my-instance", region="eu-west-1"}
 
-
-# requête a  
-total_number_of_errors{instance="my-instance", region="eu-west-1"}  
-
-# requête b  
+# requête b
 total_number_of_errors{instance="my-instance", region="eu-west-1"} offset 24h
-
+```
 # en lien :  
 # https://about.gitlab.com/blog/2019/07/23/anomaly-detection-using-prometheus/
 
 Nombre de nœuds (Up) :
 
-
-
+```promql
 count(up{job="cadvisor_my-swarm"})
+```
 
 Conteneurs en cours d'exécution par nœud :
 
-
-
+```promql
 count(container_last_seen) BY (container_label_com_docker_swarm_node_id)
+```
 
 Conteneurs en cours d'exécution par nœud, inclure les noms d'hôte correspondants :
 
-
-
+```promql
 count(container_last_seen) BY (container_label_com_docker_swarm_node_id) * ON (container_label_com_docker_swarm_node_id) GROUP_LEFT(node_name) node_meta
+```
 
 Codes de réponse HAProxy :
 
-
-
-haproxy_server_http_responses_total{backend=~"$backend", server=~"$server", code=~"$code", alias=~"$alias"} \> 0
+```promql
+haproxy_server_http_responses_total{backend=~"$backend", server=~"$server", code=~"$code", alias=~"$alias"} > 0
+```
 
 Métriques avec le plus de ressources :
 
-
-
+```promql
 topk(10, count by (__name__)({__name__=~".+"}))
+```
 
 la même chose, mais par job :
 
-
-
+```promql
 topk(10, count by (__name__, job)({__name__=~".+"}))
+```
 
 ou les jobs qui ont le plus de séries temporelles :
 
-
-
+```promql
 topk(10, count by (job)({__name__=~".+"}))
+```
 
 Top 5 par valeur :
 
-
-
+```promql
 sort_desc(topk(5, aws_service_costs))
+```
 
 Tableau - Top 5 (activer aussi l'instantané) :
 
-
-
+```promql
 sort(topk(5, aws_service_costs))
+```
 
 Le plus de métriques par job, trié :
 
-
-
+```promql
 sort_desc (sum by (job) (count by (__name__, job)({job=~".+"})))
+```
 
 Grouper par jour (Tableau) - en cours
 
-
-
-aws_service_costs{service=~"$service"} \+ ignoring(year, month, day) group_right  
-  count_values without() ("year", year(timestamp(  
-    count_values without() ("month", month(timestamp(  
-      count_values without() ("day", day_of_month(timestamp(  
-        aws_service_costs{service=~"$service"}  
-      )))  
-    )))  
+```promql
+aws_service_costs{service=~"$service"} + ignoring(year, month, day) group_right
+  count_values without() ("year", year(timestamp(
+    count_values without() ("month", month(timestamp(
+      count_values without() ("day", day_of_month(timestamp(
+        aws_service_costs{service=~"$service"}
+      )))
+    )))
   ))) * 0
+```
 
 Grouper les métriques par nom d'hôte du nœud :
 
-
-
+```promql
 node_memory_MemAvailable_bytes * on(instance) group_left(nodename) (node_uname_info)
-
+```
 ..  
 {cloud_provider="amazon",instance="x.x.x.x:9100",job="node_n1",my_hostname="n1.x.x",nodename="n1.x.x"}
 
 Soustraire deux métriques de type jauge (exclure le label qui ne correspond pas) :
 
-
-
+```promql
 polkadot_block_height{instance="polkadot", chain=~"$chain", status="sync_target"} - ignoring(status) polkadot_block_height{instance="polkadot", chain=~"$chain", status="finalized"}
+```
 
 Moyenne CPU des conteneurs sur 5m :
 
-
-
-(sum by(instance, container_label_com_amazonaws_ecs_container_name, container_label_com_amazonaws_ecs_cluster) (rate(container_cpu_usage_seconds_total[5m])) * 100\)
+```promql
+(sum by(instance, container_label_com_amazonaws_ecs_container_name, container_label_com_amazonaws_ecs_cluster) (rate(container_cpu_usage_seconds_total[5m])) * 100)
+```
 
 Utilisation mémoire des conteneurs : Total :
 
-
-
+```promql
 sum(container_memory_rss{container_label_com_docker_swarm_task_name=~".+"})
+```
 
 Mémoire des conteneurs, par Tâche, Nœud :
 
-
-
+```promql
 sum(container_memory_rss{container_label_com_docker_swarm_task_name=~".+"}) BY (container_label_com_docker_swarm_task_name, container_label_com_docker_swarm_node_id)
+```
 
 Mémoire des conteneurs par Nœud :
 
-
-
+```promql
 sum(container_memory_rss{container_label_com_docker_swarm_task_name=~".+"}) BY (container_label_com_docker_swarm_node_id)
+```
 
 Utilisation mémoire par Stack :
 
-
-
+```promql
 sum(container_memory_rss{container_label_com_docker_swarm_task_name=~".+"}) BY (container_label_com_docker_stack_namespace)
+```
 
 Supprimer des résultats les métriques qui ne contiennent pas un label spécifique :
 
-
-
-container_cpu_usage_seconds_total{container_label_com_amazonaws_ecs_cluster\!=""}
+```promql
+container_cpu_usage_seconds_total{container_label_com_amazonaws_ecs_cluster!=""}
+```
 
 Supprimer des labels d'une métrique :
 
-
-
+```promql
 sum without (age, country) (people_metrics)
+```
 
 Voir les 10 plus grosses métriques par nom :
 
-
-
+```promql
 topk(10, count by (__name__)({__name__=~".+"}))
+```
 
 Voir les 10 plus grosses métriques par nom, job :
 
-
-
+```promql
 topk(10, count by (__name__, job)({__name__=~".+"}))
+```
 
 Voir toutes les métriques pour un job spécifique :
 
-
-
+```promql
 {__name__=~".+", job="node-exporter"}
+```
 
 Voir toutes les métriques pour plusieurs jobs en utilisant les sélecteurs de vecteurs
 
-
-
+```promql
 {__name__=~".+", job=~"traefik|cadvisor|prometheus"}
+```
 
 Disponibilité (uptime) d'un site web avec blackbox-exporter :
 
-
-
+```promql
 # https://www.robustperception.io/what-percentage-of-time-is-my-service-down-for
-
 avg_over_time(probe_success{job="node"}[15m]) * 100
+```
 
 Supprimer / Remplacer :
 
@@ -389,47 +386,46 @@ Supprimer / Remplacer :
 
 Nombre de requêtes client :
 
-
-
-irate(http_client_requests_seconds_count{job="web-metrics", environment="dev", uri\!~".*actuator.*"}[5m])
+```promql
+irate(http_client_requests_seconds_count{job="web-metrics", environment="dev", uri!~".*actuator.*"}[5m])
+```
 
 Temps de réponse client :
 
-
-
-irate(http_client_requests_seconds_sum{job="web-metrics", environment="dev", uri\!~".*actuator.*"}[5m]) /  
-irate(http_client_requests_seconds_count{job="web-metrics", environment="dev", uri\!~".*actuator.*"}[5m])
+```promql
+irate(http_client_requests_seconds_sum{job="web-metrics", environment="dev", uri!~".*actuator.*"}[5m]) /
+irate(http_client_requests_seconds_count{job="web-metrics", environment="dev", uri!~".*actuator.*"}[5m])
+```
 
 Requêtes par seconde :
 
-
-
+```promql
 sum(increase(http_server_requests_seconds_count{service="my-service", env="dev"}[1m])) by (uri)
+```
 
 est identique à :
 
-
-
+```promql
 sum(rate(http_server_requests_seconds_count{service="my-service", env="dev"}[1m]) * 60 ) by (uri)
+```
 
 Voir [ce fil Stack Overflow](https://stackoverflow.com/questions/66282512/grafana-graphing-http-requests-per-minute-with-http-server-requests-seconds-coun) pour plus de détails.
 
 Requêtes et limites de ressources :
 
-
-
-# pour le cpu : taux moyen d'utilisation du cpu sur 15 minutes  
+```promql
+# pour le cpu : taux moyen d'utilisation du cpu sur 15 minutes
 rate(container_cpu_usage_seconds_total{job="kubelet",container="my-application"}[15m])
 
-# pour la mémoire : affiche en Mo  
-container_memory_usage_bytes{job="kubelet",container="my-application"}  / (1024 * 1024\)
+# pour la mémoire : affiche en Mo
+container_memory_usage_bytes{job="kubelet",container="my-application"}  / (1024 * 1024)
+```
 
 ## **Configuration du Scrape**
 
 configurations de relabeling (relabel_configs) :
 
-YAML
-
+```yaml
 # exemple complet : https://gist.github.com/ruanbekker/72216bea59fc56af189f5a7b2e3a8002  
 scrape_configs:  
   - job_name: 'multipass-nodes'  
@@ -447,11 +443,11 @@ scrape_configs:
       regex: '(.*):(.*)'  
       replacement: '${1}'  
       target_label: instance
+```
 
 configurations statiques (static_configs) :
 
-YAML
-
+```yaml
 scrape_configs:  
   - job_name: 'prometheus'  
     scrape_interval: 5s  
@@ -459,11 +455,11 @@ scrape_configs:
         - targets: ['localhost:9090']  
       labels:  
         region: 'eu-west-1'
+```
 
 configurations de découverte de service DNS (dns_sd_configs) :
 
-YAML
-
+```yaml
 scrape_configs:  
   - job_name: 'mysql-exporter'  
     scrape_interval: 5s  
@@ -477,6 +473,7 @@ scrape_configs:
       regex: '.*'  
       target_label: instance  
       replacement: 'mysqld-exporter'
+```
 
 Liens utiles :
 
@@ -496,19 +493,21 @@ Si vous avez une sortie comme celle-ci dans Grafana :
 
 et que vous voulez seulement afficher les noms d'hôte, vous pouvez appliquer ce qui suit dans le champ "Legend" (Légende) :
 
+```
 {{nodename}}
+```
 
 Si votre sortie veut exported_instance dans :
 
-
-
+```promql
 sum(exporter_memory_usage{exported_instance="myapp"})
+```
 
 Vous devriez faire :
 
-
-
+```promql
 sum by (exported_instance) (exporter_memory_usage{exported_instance="my_app"})
+```
 
 Puis dans la Légende :
 
@@ -523,9 +522,9 @@ label: node
 node: label_values(node_uname_info, nodename)  
 Ensuite dans Grafana vous pouvez utiliser :
 
-
-
+```promql
 sum(rate(node_disk_read_bytes_total{job="node"}[1m])) by (device, instance) * on(instance) group_left(nodename) (node_uname_info{nodename=~"$node"})
+```
 
 * Adresse du Node Exporter
 
@@ -562,15 +561,18 @@ name: manager_node_id
 label: manager_node_id  
 query:
 
+```promql
 label_values(container_last_seen{container_label_com_docker_swarm_service_name=~"proxy_traefik", container_label_com_docker_swarm_node_id=~".*"}, container_label_com_docker_swarm_node_id)
+```
 
 * Stacks Docker Swarm tournant sur les Managers
 
 name: stack_on_manager  
 label: stack_on_manager  
 query:
-
+```promql
 label_values(container_last_seen{container_label_com_docker_swarm_node_id=~"$manager_node_id"},container_label_com_docker_stack_namespace)
+```
 
 ## **Règles d'Enregistrement (Recording Rules)**
 
