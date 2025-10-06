@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title x-text="t.title">Générateur de Configuration Grafana.ini</title>
+    <title>Générateur de Configuration Grafana.ini</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         document.addEventListener('alpine:init', () => {
@@ -58,6 +58,7 @@
                     this.isLoading = true;
                     this.error = null;
                     document.documentElement.lang = lang;
+                    document.title = this.translations[lang].title;
                     const fileName = lang === 'fr' ? 'grafana_enhanced.json' : 'grafana_enhanced_en.json';
 
                     try {
