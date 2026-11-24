@@ -1,17 +1,17 @@
 # **Aide-mémoire Prometheus**
 
-* [Aide-mémoire Prometheus](https://www.google.com/search?q=%23aide-m%C3%A9moire-prometheus)  
-  * [Concepts de Base](https://www.google.com/search?q=%23concepts-de-base)  
-  * [Exemples Choisis](https://www.google.com/search?q=%23exemples-choisis)  
-  * [Questions et Réponses](https://www.google.com/search?q=%23questions-et-r%C3%A9ponses)  
-  * [Exemples de Requêtes](https://www.google.com/search?q=%23exemples-de-requ%C3%AAtes)  
-  * [Configuration du Scrape](https://www.google.com/search?q=%23configuration-du-scrape)  
-  * [Grafana avec Prometheus](https://www.google.com/search?q=%23grafana-avec-prometheus)  
-    * [Variables](https://www.google.com/search?q=%23variables)  
-  * [Règles d'Enregistrement (Recording Rules)](https://www.google.com/search?q=%23r%C3%A8gles-denregistrement-recording-rules)  
-  * [Instrumentation d'Application](https://www.google.com/search?q=%23instrumentation-dapplication)  
-    * [Python Flask](https://www.google.com/search?q=%23python-flask)  
-  * [Sources Externes](https://www.google.com/search?q=%23sources-externes)
+* [Aide-mémoire Prometheus](#aide-mémoire-prometheus)
+  * [Concepts de Base](#concepts-de-base)
+  * [Exemples Choisis](#exemples-choisis)
+  * [Questions et Réponses](#questions-et-réponses)
+  * [Exemples de Requêtes](#exemples-de-requêtes)
+  * [Configuration du Scrape](#configuration-du-scrape)
+  * [Grafana avec Prometheus](#grafana-avec-prometheus)
+    * [Variables](#variables)
+  * [Règles d'Enregistrement (Recording Rules)](#règles-denregistrement-recording-rules)
+  * [Instrumentation d'Application](#instrumentation-dapplication)
+    * [Python Flask](#python-flask)
+  * [Sources Externes](#sources-externes)
 
 ## **Concepts de Base**
 
@@ -31,7 +31,7 @@ Fonctions de Requête :
 
 Exemples de requêtes par exportateur / service :
 
-* [Métriques Node Exporter](https://www.google.com/search?q=metric_examples/NODE_METRICS.md)
+* Voir [Exemples de Requêtes](#exemples-de-requêtes) et la documentation française dans [docs/fr/](docs/fr/index.md).
 
 ## **Questions et Réponses**
 

@@ -35,27 +35,12 @@ Prometheus is an open-source monitoring and alerting toolkit designed for reliab
 
 ## Architecture Overview
 
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Target    │    │   Target    │    │   Target    │
-│ Application │    │    Node     │    │   Service   │
-│   :8080     │    │  Exporter   │    │   :9100     │
-└─────────────┘    └─────────────┘    └─────────────┘
-       │                   │                   │
-       └───────────────────┼───────────────────┘
-                           │ (scrape)
-                           ▼
-                ┌─────────────────┐
-                │   Prometheus    │
-                │     Server      │
-                │     :9090       │
-                └─────────────────┘
-                           │
-                           ▼
-                ┌─────────────────┐
-                │     Grafana     │
-                │     :3000       │
-                └─────────────────┘
+```mermaid
+graph TD
+    T1["Target Application (:8080)"] -->|"scrape"| P["Prometheus Server (:9090)"]
+    T2["Node Exporter (:9100)"] -->|"scrape"| P
+    T3["Service Exporter (:9100)"] -->|"scrape"| P
+    P -->|"PromQL queries"| G["Grafana (:3000)"]
 ```
 
 ## Metrics and Labels

@@ -31,7 +31,7 @@ Query Functions:
 
 Example queries per exporter / service:
 
-- [Node Metrics](metric_examples/NODE_METRICS.md)
+- See [Example Queries](#example-queries) and [Prometheus Guide](docs/prometheus-guide.md) for Node Exporter examples.
 
 ## Questions and Answers
 
